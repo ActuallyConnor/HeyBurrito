@@ -39,3 +39,4 @@ of the `giveBurrito()` method.
 the function is operating correctly.
 3. Subscribe to the following bot events: `app_mention` and `message.channels`
 4. Click _'Save Changes'_
+5. Revert back your `routes/api.php` file.
