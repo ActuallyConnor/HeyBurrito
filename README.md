@@ -35,5 +35,7 @@ of the `giveBurrito()` method.
     
     i.e. `https://{yourapiurl}/api/burrito`
 
-3. Then you should be all done. If your verification fails please reread the documentation and run the tests to see if 
+    1. If your verification fails please reread the documentation and run the tests to see if 
 the function is operating correctly.
+3. Subscribe to the following bot events: `app_mention` and `message.channels`
+4. Click _'Save Chnages'_
