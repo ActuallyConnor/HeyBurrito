@@ -12,14 +12,15 @@ class BurritoController extends Controller {
 	
 	private function slackChallenge( Request $request ) {
 		if ( !empty( $request->json() ) ) {
-			$body = $request->json();
-			$challenge = $body->get( 'challenge' );
+			$json = $request->json();
+			$body = $json->get( 'body' );
+			$challenge = $body[ 'challenge' ];
 			return response()
-				->json([
+				->json( [
 					'challenge' => $challenge
-				]);
+				] );
 		}
-		return response('No payload in request')
-			->header('Content-Type', 'text/plain');
+		return response( 'No payload in request' )
+			->header( 'Content-Type', 'text/plain' );
 	}
 }
