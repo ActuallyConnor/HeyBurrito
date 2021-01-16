@@ -14,7 +14,7 @@ class BurritoController extends Controller {
 	 * @param Request $request
 	 * @return false|Response
 	 */
-	private function slackChallenge(Request $request): Response|bool {
+	private function slackChallenge(Request $request) {
 		if ($request->has('challenge')) {
 			$requestJson = $request->input('challenge');
 			$requestArr = json_decode($requestJson, true);
