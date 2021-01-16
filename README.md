@@ -38,4 +38,4 @@ of the `giveBurrito()` method.
     1. If your verification fails please reread the documentation and run the tests to see if 
 the function is operating correctly.
 3. Subscribe to the following bot events: `app_mention` and `message.channels`
-4. Click _'Save Chnages'_
+4. Click _'Save Changes'_
