@@ -15,9 +15,9 @@ use App\Http\Controllers\BurritoController;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::middleware( 'auth:api' )->get( '/user', function( Request $request ) {
+	return $request->user();
+} );
 
 //Route::middleware('auth:api')->post('/burrito', [BurritoController::class, 'giveBurrito']);
 Route::post('/burrito', [BurritoController::class, 'giveBurrito']);
