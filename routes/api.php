@@ -19,5 +19,4 @@ Route::middleware( 'auth:api' )->get( '/user', function( Request $request ) {
 	return $request->user();
 } );
 
-//Route::post('/burrito', [BurritoController::class, 'giveBurrito']);
-Route::post('/burrito', [BurritoController::class, 'slackChallenge']);
+Route::post('/burrito', [BurritoController::class, 'giveBurrito']);
