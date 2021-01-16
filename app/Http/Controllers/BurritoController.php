@@ -6,10 +6,10 @@ use Illuminate\Http\Request;
 
 class BurritoController extends Controller {
 	public function giveBurrito( Request $request ) {
-		return $this->slackChallenge( $request );
+	
 	}
 	
-	private function slackChallenge( Request $request ) {
+	public function slackChallenge( Request $request ) {
 		if ( !empty( $request->json() ) ) {
 			$json = $request->json();
 			
