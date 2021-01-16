@@ -12,8 +12,15 @@ class BurritoController extends Controller {
 	private function slackChallenge( Request $request ) {
 		if ( !empty( $request->json() ) ) {
 			$json = $request->json();
-			$body = $json->get( 'body' );
-			$challenge = $body[ 'challenge' ];
+			
+			if ($json->has('challenge')) {
+				$challenge = $json->get('challenge');
+			} elseif ($json->has('body')) {
+				$challenge = $json->get( 'body' )['challenge'];
+			} else {
+				$challenge = '';
+			}
+			
 			return response()
 				->json( [
 					'challenge' => $challenge
