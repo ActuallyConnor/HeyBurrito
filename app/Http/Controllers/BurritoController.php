@@ -13,10 +13,10 @@ class BurritoController extends Controller {
 		if ( !empty( $request->json() ) ) {
 			$json = $request->json();
 			
-			if ($json->has('challenge')) {
-				$challenge = $json->get('challenge');
-			} elseif ($json->has('body')) {
-				$challenge = $json->get( 'body' )['challenge'];
+			if ( $json->has( 'challenge' ) ) {
+				$challenge = $json->get( 'challenge' );
+			} elseif ( $json->has( 'body' ) ) {
+				$challenge = $json->get( 'body' )[ 'challenge' ];
 			} else {
 				$challenge = '';
 			}
