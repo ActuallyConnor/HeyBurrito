@@ -1,6 +1,13 @@
 # Hey Burrito
 
-### The FREE Hey Taco Slack Bot replacement
+![Hey Burrito icon](public/images/heyburritoicon.jpg)
+
+### The open-source HeyTaco Slack Bot replacement
+
+## Branding colours
+
+- Primary: #F8D233
+- Secondary: #1F3FB2
 
 ## Setup
 
