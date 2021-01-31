@@ -50,7 +50,7 @@ class UserController extends Controller {
 		}
 
 		Log::info( 'User successfully added' );
-		return response( json_encode( $user_info ) );
+		return response( 'User successfully added' );
 	}
 	
 	public function removeUser( Request $request ) {
@@ -74,7 +74,8 @@ class UserController extends Controller {
 	}
 	
 	/**
-	 * Use the users.list API endpoint to retrieve a list of all users and then search through them for the matching username
+	 * Get the specific Slack member data based on the provided username, or return false if user is deactivated or
+	 * does not exist
 	 * @param $username
 	 * @return false|\Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
 	 */
@@ -89,6 +90,7 @@ class UserController extends Controller {
 	}
 	
 	/**
+	 * Get list of Slack users from users.list endpoint
 	 * @return false|mixed
 	 */
 	private function getListOfSlackUsers() {
