@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 
@@ -25,34 +26,31 @@ class UserController extends Controller {
 			return $this->logAndSendErrorResponse( 'username' );
 		}
 		
-		/**
-		 * TODO: Get user information using users:read slack API endpoint
-		 * From there get the name, email, and user_id
-		 * Usernames can change but user IDs cannot so that is more important than username
-		 * Username will just help with caching results
-		 */
-		
-		$name = $data->get( 'name' );
-		$email = $data->get( 'email' );
 		$username = $data->get( 'username' );
-		$user_id = $data->get( 'user_id' );
+		$user_info = $this->getUserInformationFromSlack( $username );
+		
+		if (!$user_info) {
+			return $this->logAndSendErrorResponse( '', 'Unable to get userdata from slack', 500 );
+		}
 		
 		$user = new User();
-		
-		$user->name = $name;
-		$user->email = $email;
-		$user->username = $username;
-		$user->user_id = $user_id;
+
+		$user->name = $user_info->real_name;
+		$user->username = $user_info->profile->display_name;
+		$user->user_id = $user_info->id;
 		$user->active = true;
-		
+		$user->total_received = 0;
+		$user->total_given = 0;
+		$user->total_redeemable = 0;
+
 		$userAdded = $user->save();
-		
+
 		if ( !$userAdded ) {
 			return $this->logAndSendErrorResponse( '', 'User unable to be added to database', 500 );
 		}
-		
+
 		Log::info( 'User successfully added' );
-		return response( 'User successfully added' );
+		return response( json_encode( $user_info ) );
 	}
 	
 	public function removeUser( Request $request ) {
@@ -78,10 +76,22 @@ class UserController extends Controller {
 	/**
 	 * Use the users.list API endpoint to retrieve a list of all users and then search through them for the matching username
 	 * @param $username
-	 * @return false|\Psr\Http\Message\ResponseInterface
-	 * @throws \GuzzleHttp\Exception\GuzzleException
+	 * @return false|\Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
 	 */
-	public function getUserInformationFromSlack( $username ) {
+	private function getUserInformationFromSlack( $username ) {
+		$slack_users = $this->getListOfSlackUsers();
+		
+		if ( !$slack_users ) {
+			echo 'failure';
+		}
+		
+		return $this->getSlackMemberData( $username, $slack_users );
+	}
+	
+	/**
+	 * @return false|mixed
+	 */
+	private function getListOfSlackUsers() {
 		$base_uri = 'https://slack.com/api/';
 		$endpoint = 'users.list';
 		$method = 'GET';
@@ -96,7 +106,7 @@ class UserController extends Controller {
 			$response = $client->request( $method, $endpoint, [
 				'headers' => [
 					'Content-Type' => $content_type,
-					'auth' => 'Bearer ' . $token
+					'Authorization' => 'Bearer ' . $token
 				]
 			] );
 		} catch ( Throwable $e ) {
@@ -104,7 +114,40 @@ class UserController extends Controller {
 			return false;
 		}
 		
-		return $response;
+		if ( $response->getStatusCode() != 200 ) {
+			Log::error( print_r( [
+				'message' => 'Request did not return ok response',
+				'response_code' => $response->getStatusCode()
+			], true ) );
+			return false;
+		}
+		
+		$json = $response->getBody()->getContents();
+		return json_decode( $json );
+	}
+	
+	/**
+	 * @param $username
+	 * @param $slackUsers
+	 * @return false
+	 */
+	private function getSlackMemberData( $username, $slackUsers ) {
+		$members = $slackUsers->members;
+		
+		foreach ( $members as $member ) {
+			
+			// Fail up front
+			if ( $member->deleted ) {
+				continue;
+			}
+			if ( $username !== $member->profile->display_name ) {
+				continue;
+			}
+			
+			return $member;
+		}
+		
+		return false;
 	}
 	
 	/**
