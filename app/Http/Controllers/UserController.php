@@ -54,23 +54,7 @@ class UserController extends Controller {
 	}
 	
 	public function removeUser( Request $request ) {
-		$data = $request->json();
-		
-		if ( empty( $data ) ) {
-			return $this->logAndSendErrorResponse( '' . 'No JSON body in request' );
-		}
-		if ( !$data->has( 'name' ) ) {
-			return $this->logAndSendErrorResponse( 'name' );
-		}
-		if ( !$data->has( 'email' ) ) {
-			return $this->logAndSendErrorResponse( 'email' );
-		}
-		if ( !$data->has( 'username' ) ) {
-			return $this->logAndSendErrorResponse( 'username' );
-		}
-		if ( !$data->has( 'user_id' ) ) {
-			return $this->logAndSendErrorResponse( 'user_id' );
-		}
+		// TODO: create this function
 	}
 	
 	/**
