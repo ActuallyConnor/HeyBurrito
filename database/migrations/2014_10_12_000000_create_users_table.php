@@ -18,6 +18,8 @@ class CreateUsersTable extends Migration {
 			$table->timestamp( 'email_verified_at' )->nullable();
 			$table->string( 'password' );
 			$table->string( 'username' );
+			$table->string( 'user_id' );
+			$table->boolean( 'active' );
 			$table->integer( 'total_received' );
 			$table->integer( 'total_given' );
 			$table->integer( 'total_redeemable' );
