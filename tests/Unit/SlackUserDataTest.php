@@ -7,8 +7,8 @@ use PHPUnit\Framework\TestCase;
 
 class SlackUserDataTest extends TestCase {
 
-//	public function testGetUserInformationFromSlack() {
-//		$member = SlackUserData::getUserInformationFromSlack( 'Actually Connor' );
-//		$this->assertIsObject( $member );
-//	}
+	public function testGetUserInformationFromSlack() {
+		$member = SlackUserData::getUserInformationFromSlack( 'Actually Connor' );
+		$this->assertIsObject( $member );
+	}
 }

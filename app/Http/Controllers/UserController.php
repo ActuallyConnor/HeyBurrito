@@ -46,11 +46,15 @@ class UserController extends Controller {
 		$username = $data->get( 'username' );
 		$user_info = SlackUserData::getUserInformationFromSlack( $username );
 		
-		if (!$user_info) {
+		if ( !$user_info ) {
 			return ResponseHelper::logAndSendErrorResponse( '', 'Unable to get userdata from slack', 500 );
 		}
 		
 		$user = new User();
+		
+		if ( !empty( $user->where( 'user_id', $user_info->id )->first() ) ) {
+			return ResponseHelper::logAndSendErrorResponse( '', 'User already exists in the database', 409 );
+		}
 		
 		$user->name = $user_info->real_name;
 		$user->username = $user_info->profile->display_name;
@@ -67,7 +71,7 @@ class UserController extends Controller {
 		}
 		
 		Log::info( 'User successfully added' );
-		return response( 'User successfully added' );
+		return response( 'User successfully added', 201 );
 	}
 	
 	/**

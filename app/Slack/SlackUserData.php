@@ -4,6 +4,7 @@ namespace App\Slack;
 
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class SlackUserData {
 	
@@ -68,6 +69,9 @@ class SlackUserData {
 	 * @return false
 	 */
 	private static function getSlackMemberData( $username, $slackUsers ) {
+		if ( !isset( $slackUsers->members ) ) {
+			return false;
+		}
 		$members = $slackUsers->members;
 		
 		foreach ( $members as $member ) {
