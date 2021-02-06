@@ -17,16 +17,25 @@ class UserControllerTest extends TestCase {
 		$this->assertIsObject( new UserController() );
 	}
 	
+	/**
+	 * Test creating user in the database
+	 */
 	public function testCreatingUser() {
 		// Delete user if they already exist before attempting to add them to the database
-		$user = new User();
-		$connor = $user->where( 'username', 'Actually Connor' )->first();
-		if ( !empty( $connor ) ) {
-			$connor->delete();
-		}
+		$delete_response = $this->json( 'DELETE', '/api/user/Actually Connor' );
 		
 		$response = $this->json( 'POST', '/api/user', [ 'username' => 'Actually Connor' ] );
 		
 		$response->assertStatus( 201 );
+	}
+	
+	public function testRemoveUserFromDatabase() {
+		$response = $this->json( 'DELETE', '/api/user/Actually Connor' );
+		$response->assertStatus( 200 );
+	}
+	
+	public function testFailRemoveUserFromDatabase() {
+		$response = $this->json( 'DELETE', '/api/user/dopey' );
+		$response->assertStatus( 404 );
 	}
 }

@@ -15,7 +15,8 @@ class UserController extends Controller {
 	 * @return \Illuminate\Http\Response
 	 */
 	public function index() {
-		//
+		$member = SlackUserData::getUserInformationFromSlack( 'Actually Connor' );
+		var_dump( $member );
 	}
 	
 	/**
@@ -112,6 +113,23 @@ class UserController extends Controller {
 	 * @return \Illuminate\Http\Response
 	 */
 	public function destroy( $id ) {
-		//
+		
+		if ( empty( $id ) ) {
+			return ResponseHelper::logAndSendErrorResponse( '' . 'No id passed to destroy request' );
+		}
+		
+		$user = new User();
+		
+		$user_from_db = $user->where( 'username', $id )->first();
+		
+		if ( empty( $user_from_db ) ) {
+			return ResponseHelper::logAndSendErrorResponse( '', 'User does not exist in the database', 404 );
+		}
+		
+		$user_from_db->delete();
+		
+		
+		Log::info( sprintf( 'User %s removed from database', $id ) );
+		return response( 'User removed from database' );
 	}
 }
