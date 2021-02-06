@@ -16,11 +16,11 @@ class CreateUsersTable extends Migration {
 			$table->string( 'name' );
 			$table->string( 'username' );
 			$table->string( 'user_id' );
-			$table->boolean( 'active' );
-			$table->integer( 'total_received' );
+			$table->boolean( 'active' )->default( true );
+			$table->integer( 'total_received' )->default( 0 );
 			$table->integer( 'total_given' );
-			$table->integer( 'total_redeemable' );
-			$table->integer( 'burritos_left_today' );
+			$table->integer( 'total_redeemable' )->default( 0 );
+			$table->integer( 'burritos_left_today' )->default( 0 );
 			
 			$table->rememberToken();
 			$table->timestamps();

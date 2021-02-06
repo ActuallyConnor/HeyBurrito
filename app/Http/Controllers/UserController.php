@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use ResponseHelper;
-use SlackUserData;
+use App\Helpers\ResponseHelper;
+use App\Slack\SlackUserData;
 
 class UserController extends Controller {
 	/**

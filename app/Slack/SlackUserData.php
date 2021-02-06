@@ -1,5 +1,6 @@
 <?php
 
+namespace App\Slack;
 
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
