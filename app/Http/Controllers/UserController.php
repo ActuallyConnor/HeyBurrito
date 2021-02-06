@@ -4,37 +4,54 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
-use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
-use Throwable;
-
+use ResponseHelper;
+use SlackUserData;
 
 class UserController extends Controller {
+	/**
+	 * Display a listing of the resource.
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public function index() {
+		//
+	}
 	
 	/**
-	 * Adds the user to the database
-	 * @param Request $request
-	 * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+	 * Show the form for creating a new resource.
+	 *
+	 * @return \Illuminate\Http\Response
 	 */
-	public function addUser( Request $request ) {
+	public function create() {
+		//
+	}
+	
+	/**
+	 * Store a newly created resource in storage.
+	 *
+	 * @param \Illuminate\Http\Request $request
+	 * @return \Illuminate\Http\Response
+	 */
+	public function store( Request $request ) {
 		$data = $request->json();
 		
 		if ( empty( $data ) ) {
-			return $this->logAndSendErrorResponse( '' . 'No JSON body in request' );
+			return ResponseHelper::logAndSendErrorResponse( '' . 'No JSON body in request' );
 		}
 		if ( !$data->has( 'username' ) ) {
-			return $this->logAndSendErrorResponse( 'username' );
+			return ResponseHelper::logAndSendErrorResponse( 'username' );
 		}
 		
 		$username = $data->get( 'username' );
-		$user_info = $this->getUserInformationFromSlack( $username );
+		$user_info = SlackUserData::getUserInformationFromSlack( $username );
 		
 		if (!$user_info) {
-			return $this->logAndSendErrorResponse( '', 'Unable to get userdata from slack', 500 );
+			return ResponseHelper::logAndSendErrorResponse( '', 'Unable to get userdata from slack', 500 );
 		}
 		
 		$user = new User();
-
+		
 		$user->name = $user_info->real_name;
 		$user->username = $user_info->profile->display_name;
 		$user->user_id = $user_info->id;
@@ -42,113 +59,55 @@ class UserController extends Controller {
 		$user->total_received = 0;
 		$user->total_given = 0;
 		$user->total_redeemable = 0;
-
+		
 		$userAdded = $user->save();
-
+		
 		if ( !$userAdded ) {
-			return $this->logAndSendErrorResponse( '', 'User unable to be added to database', 500 );
+			return ResponseHelper::logAndSendErrorResponse( '', 'User unable to be added to database', 500 );
 		}
-
+		
 		Log::info( 'User successfully added' );
 		return response( 'User successfully added' );
 	}
 	
-	public function removeUser( Request $request ) {
-		// TODO: create this function
+	/**
+	 * Display the specified resource.
+	 *
+	 * @param int $id
+	 * @return \Illuminate\Http\Response
+	 */
+	public function show( $id ) {
+		//
 	}
 	
 	/**
-	 * Get the specific Slack member data based on the provided username, or return false if user is deactivated or
-	 * does not exist
-	 * @param $username
-	 * @return false|\Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+	 * Show the form for editing the specified resource.
+	 *
+	 * @param int $id
+	 * @return \Illuminate\Http\Response
 	 */
-	private function getUserInformationFromSlack( $username ) {
-		$slack_users = $this->getListOfSlackUsers();
-		
-		if ( !$slack_users ) {
-			echo 'failure';
-		}
-		
-		return $this->getSlackMemberData( $username, $slack_users );
+	public function edit( $id ) {
+		//
 	}
 	
 	/**
-	 * Get list of Slack users from users.list endpoint
-	 * @return false|mixed
+	 * Update the specified resource in storage.
+	 *
+	 * @param \Illuminate\Http\Request $request
+	 * @param int $id
+	 * @return \Illuminate\Http\Response
 	 */
-	private function getListOfSlackUsers() {
-		$base_uri = 'https://slack.com/api/';
-		$endpoint = 'users.list';
-		$method = 'GET';
-		$content_type = 'application/x-www-form-urlencoded';
-		$token = env( 'BOT_OAUTH_TOKEN' );
-		
-		$client = new Client( [
-			'base_uri' => $base_uri
-		] );
-		
-		try {
-			$response = $client->request( $method, $endpoint, [
-				'headers' => [
-					'Content-Type' => $content_type,
-					'Authorization' => 'Bearer ' . $token
-				]
-			] );
-		} catch ( Throwable $e ) {
-			Log::error( $e );
-			return false;
-		}
-		
-		if ( $response->getStatusCode() != 200 ) {
-			Log::error( print_r( [
-				'message' => 'Request did not return ok response',
-				'response_code' => $response->getStatusCode()
-			], true ) );
-			return false;
-		}
-		
-		$json = $response->getBody()->getContents();
-		return json_decode( $json );
+	public function update( Request $request, $id ) {
+		//
 	}
 	
 	/**
-	 * @param $username
-	 * @param $slackUsers
-	 * @return false
+	 * Remove the specified resource from storage.
+	 *
+	 * @param int $id
+	 * @return \Illuminate\Http\Response
 	 */
-	private function getSlackMemberData( $username, $slackUsers ) {
-		$members = $slackUsers->members;
-		
-		foreach ( $members as $member ) {
-			
-			// Fail up front
-			if ( $member->deleted ) {
-				continue;
-			}
-			if ( $username !== $member->profile->display_name ) {
-				continue;
-			}
-			
-			return $member;
-		}
-		
-		return false;
-	}
-	
-	/**
-	 * Handles logging and response for bad request
-	 * @param string $dataAttrKey
-	 * @param string $customMessage
-	 * @param int $statusCode
-	 * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-	 */
-	private function logAndSendErrorResponse( $dataAttrKey = '', $customMessage = '', $statusCode = 400 ) {
-		Log::error( print_r( [
-			'400',
-			'Error in UserController::addUser()',
-			!empty( $customMessage ) ? : sprintf( 'No %s in JSON body', $dataAttrKey )
-		], true ) );
-		return response( !empty( $customMessage ) ? : sprintf( 'No %s in JSON body', $dataAttrKey ), $statusCode );
+	public function destroy( $id ) {
+		//
 	}
 }
