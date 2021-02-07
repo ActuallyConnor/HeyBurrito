@@ -103,7 +103,7 @@ class UserController extends Controller {
 	 * @param $user_id
 	 * @return Response
 	 */
-	public function update( Request $request, $user_id ) {
+	public function update( Request $request, $user_id ): Response {
 		
 		$data = $request->json();
 		
@@ -111,52 +111,44 @@ class UserController extends Controller {
 			return ResponseHelper::logAndSendErrorResponse( DebugHelper::get_called_method(), 'No JSON body in request' );
 		}
 		
-		$userUpdated = $this->handleUserRequestData( $data, 'name', 'string' );
-		$userUpdated .= $this->handleUserRequestData( $data, 'username', 'string' );
-		$userUpdated .= $this->handleUserRequestData( $data, 'active', 'bool' );
-		$userUpdated .= $this->handleUserRequestData( $data, 'total_received', 'int' );
-		$userUpdated .= $this->handleUserRequestData( $data, 'total_given', 'int' );
-		$userUpdated .= $this->handleUserRequestData( $data, 'total_redeemable', 'int' );
-		
-		if ( !$userUpdated ) {
-			return ResponseHelper::logAndSendErrorResponse( DebugHelper::get_called_method(), sprintf( 'User %s unable to be updated in database', $user_id ), 500 );
-		}
+		$message_arr = array();
+		array_push( $message_arr,
+			$this->handleUserRequestData( $user_id, $data, 'name', 'string' ),
+			$this->handleUserRequestData( $user_id, $data, 'username', 'string' ),
+			$this->handleUserRequestData( $user_id, $data, 'active', 'boolean' ),
+			$this->handleUserRequestData( $user_id, $data, 'total_received', 'integer' ),
+			$this->handleUserRequestData( $user_id, $data, 'total_given', 'integer' ),
+			$this->handleUserRequestData( $user_id, $data, 'total_redeemable', 'integer' )
+		);
 		
 		Log::info( sprintf( 'User %s successfully updated', $user_id ) );
-		return response( sprintf( 'Updated %s user in database', $user_id ) );
+		return response( sprintf( print_r( [
+			'Updated %s user in database'
+		], true ), $user_id ) );
 	}
 	
 	/**
+	 * @param $user_id
 	 * @param $data
 	 * @param string $value
 	 * @param string $data_type
-	 * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|Response
+	 * @return string
 	 */
-	private function handleUserRequestData( $data, string $value, string $data_type = '' ) {
-		if ( !$data->has( $value ) ) {
-			return ResponseHelper::logAndSendErrorResponse( DebugHelper::get_called_method(), sprintf( 'Data does not contain %s', $value ) );
+	private function handleUserRequestData( $user_id, $data, string $value, string $data_type = '' ): string {
+		if ( $data->has( $value ) ) {
+			if ( gettype( $data->get( $value ) === $data_type ) ) {
+				User::where( 'user_id', $user_id )
+					->update( [ $value => $data->get( $value ) ] );
+				Log::info( sprintf( 'Data value %s has been updated', $value ) );
+				return sprintf( 'Data value %s has been updated', $value );
+			} else {
+				Log::error( sprintf( 'Data value %s does not equal data type %s', $value, $data_type ) );
+				return sprintf( 'Data value %s does not equal data type %s', $value, $data_type );
+			}
+		} else {
+			Log::info( sprintf( 'Data value %s not in JSON body', $value ) );
+			return sprintf( 'Data value %s not in JSON body', $value );
 		}
-		
-		switch ( $data_type ) {
-			case 'string':
-				$is_data_type = is_string( $data->get( $value ) );
-				break;
-			case 'bool':
-				$is_data_type = is_bool( $data->get( $value ) );
-				break;
-			case 'int':
-				$is_data_type = is_int( $data->get( $value ) );
-				break;
-			default:
-				$is_data_type = false;
-		}
-		
-		if ( !$is_data_type ) {
-			return ResponseHelper::logAndSendErrorResponse( DebugHelper::get_called_method(), sprintf( 'Data %s is not data type %s', $value, $data_type ) );
-		}
-		
-		return User::where( $value, $data->get( $value ) )
-			->update( [ $value => $data->get( $value ) ] );
 	}
 	
 	/**

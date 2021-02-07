@@ -64,7 +64,7 @@ class UserControllerTest extends TestCase {
 	}
 	
 	/**
-	 *
+	 * Test update user data validation
 	 */
 	public function testUpdateUserDataValidation() {
 		$response = $this->json( 'PATCH', '/api/user/UH8LSF3NV', [
@@ -74,6 +74,16 @@ class UserControllerTest extends TestCase {
 			'total_received' => 1,
 			'total_given' => 1,
 			'total_redeemable' => 1
+		] );
+		$response->assertStatus( 200 );
+	}
+	
+	/**
+	 * Test fail update user data validation
+	 */
+	public function testFailUpdateUserDataValidation() {
+		$response = $this->json( 'PATCH', '/api/user/UH8LSF3NV', [
+			'bad_field' => 'dopey',
 		] );
 		$response->assertStatus( 200 );
 	}
