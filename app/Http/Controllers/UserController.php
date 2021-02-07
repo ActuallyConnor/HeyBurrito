@@ -100,10 +100,10 @@ class UserController extends Controller {
 	 * Update the specified resource in storage.
 	 *
 	 * @param Request $request
-	 * @param $username
+	 * @param $user_id
 	 * @return Response
 	 */
-	public function update( Request $request, $username ) {
+	public function update( Request $request, $user_id ) {
 		
 		$data = $request->json();
 		
@@ -111,33 +111,69 @@ class UserController extends Controller {
 			return ResponseHelper::logAndSendErrorResponse( DebugHelper::get_called_method(), 'No JSON body in request' );
 		}
 		
-		$user = new User();
-
-//		if ( $data->has( 'name' ) ) {
-//			Log::info($data->get('name'));
-//		}
-//
-//		if ( $data->has( 'username' ) ) {
-//
-//		}
-		return response( sprintf( 'Updated %s user in database', $username ) );
+		$userUpdated = $this->handleUserRequestData( $data, 'name', 'string' );
+		$userUpdated .= $this->handleUserRequestData( $data, 'username', 'string' );
+		$userUpdated .= $this->handleUserRequestData( $data, 'active', 'bool' );
+		$userUpdated .= $this->handleUserRequestData( $data, 'total_received', 'int' );
+		$userUpdated .= $this->handleUserRequestData( $data, 'total_given', 'int' );
+		$userUpdated .= $this->handleUserRequestData( $data, 'total_redeemable', 'int' );
+		
+		if ( !$userUpdated ) {
+			return ResponseHelper::logAndSendErrorResponse( DebugHelper::get_called_method(), sprintf( 'User %s unable to be updated in database', $user_id ), 500 );
+		}
+		
+		Log::info( sprintf( 'User %s successfully updated', $user_id ) );
+		return response( sprintf( 'Updated %s user in database', $user_id ) );
+	}
+	
+	/**
+	 * @param $data
+	 * @param string $value
+	 * @param string $data_type
+	 * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|Response
+	 */
+	private function handleUserRequestData( $data, string $value, string $data_type = '' ) {
+		if ( !$data->has( $value ) ) {
+			return ResponseHelper::logAndSendErrorResponse( DebugHelper::get_called_method(), sprintf( 'Data does not contain %s', $value ) );
+		}
+		
+		switch ( $data_type ) {
+			case 'string':
+				$is_data_type = is_string( $data->get( $value ) );
+				break;
+			case 'bool':
+				$is_data_type = is_bool( $data->get( $value ) );
+				break;
+			case 'int':
+				$is_data_type = is_int( $data->get( $value ) );
+				break;
+			default:
+				$is_data_type = false;
+		}
+		
+		if ( !$is_data_type ) {
+			return ResponseHelper::logAndSendErrorResponse( DebugHelper::get_called_method(), sprintf( 'Data %s is not data type %s', $value, $data_type ) );
+		}
+		
+		return User::where( $value, $data->get( $value ) )
+			->update( [ $value => $data->get( $value ) ] );
 	}
 	
 	/**
 	 * Remove the specified resource from storage.
 	 *
-	 * @param int $username
+	 * @param int $user_id
 	 * @return Response
 	 */
-	public function destroy( $username ) {
+	public function destroy( $user_id ) {
 		
-		if ( empty( $username ) ) {
+		if ( empty( $user_id ) ) {
 			return ResponseHelper::logAndSendErrorResponse( DebugHelper::get_called_method(), 'No id passed to destroy request' );
 		}
 		
 		$user = new User();
 		
-		$user_from_db = $user->where( 'username', $username )->first();
+		$user_from_db = $user->where( 'user_id', $user_id )->first();
 		
 		if ( empty( $user_from_db ) ) {
 			return ResponseHelper::logAndSendErrorResponse( DebugHelper::get_called_method(), 'User does not exist in the database', 404 );
@@ -146,7 +182,7 @@ class UserController extends Controller {
 		$user_from_db->delete();
 		
 		
-		Log::info( sprintf( 'User %s removed from database', $username ) );
+		Log::info( sprintf( 'User %s removed from database', $user_id ) );
 		return response( 'User removed from database' );
 	}
 }

@@ -22,7 +22,9 @@ class UserControllerTest extends TestCase {
 	 */
 	public function testCreatingUser() {
 		// Delete user if they already exist before attempting to add them to the database
-		$delete_response = $this->json( 'DELETE', '/api/user/Actually Connor' );
+		if ( !empty( User::where( 'user_id', 'UH8LSF3NV' )->first() ) ) {
+			$delete_response = $this->json( 'DELETE', '/api/user/UH8LSF3NV' );
+		}
 		
 		$response = $this->json( 'POST', '/api/user', [ 'username' => 'Actually Connor' ] );
 		
@@ -62,6 +64,21 @@ class UserControllerTest extends TestCase {
 	}
 	
 	/**
+	 *
+	 */
+	public function testUpdateUserDataValidation() {
+		$response = $this->json( 'PATCH', '/api/user/UH8LSF3NV', [
+			'name' => 'Connor',
+			'username' => 'Actually Connor',
+			'active' => true,
+			'total_received' => 1,
+			'total_given' => 1,
+			'total_redeemable' => 1
+		] );
+		$response->assertStatus( 200 );
+	}
+	
+	/**
 	 * Test failing updating user because no username
 	 */
 	public function testFailUpdateUserNoUsername() {
@@ -81,7 +98,11 @@ class UserControllerTest extends TestCase {
 	 * Test removing user from database
 	 */
 	public function testRemoveUser() {
-		$response = $this->json( 'DELETE', '/api/user/Actually Connor' );
+		if ( empty( User::where( 'user_id', 'UH8LSF3NV' )->first() ) ) {
+			$create_response = $this->json( 'POST', '/api/user', [ 'username' => 'Actually Connor' ] );
+		}
+		
+		$response = $this->json( 'DELETE', '/api/user/UH8LSF3NV' );
 		$response->assertStatus( 200 );
 	}
 	
