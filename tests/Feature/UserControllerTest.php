@@ -29,13 +29,75 @@ class UserControllerTest extends TestCase {
 		$response->assertStatus( 201 );
 	}
 	
-	public function testRemoveUserFromDatabase() {
+	/**
+	 * Test failing creating user because no JSON data
+	 */
+	public function testFailCreatingUserNoJson() {
+		$response = $this->json( 'POST', '/api/user', [] );
+		$response->assertStatus( 400 );
+	}
+	
+	/**
+	 * Test failing creating user because of bad username
+	 */
+	public function testFailCreatingUserBadUsername() {
+		$response = $this->json( 'POST', '/api/user', [ 'username' => 'dopey' ] );
+		$response->assertStatus( 500 );
+	}
+	
+	/**
+	 * Test failing creating user because of bad username
+	 */
+	public function testFailCreatingUserNoUsername() {
+		$response = $this->json( 'POST', '/api/user', [ 'username' => '' ] );
+		$response->assertStatus( 500 );
+	}
+	
+	/**
+	 * Test updating user in database
+	 */
+	public function testUpdateUser() {
+		$response = $this->json( 'PATCH', '/api/user/Actually Connor', [ 'name' => 'Connor' ] );
+		$response->assertStatus( 200 );
+	}
+	
+	/**
+	 * Test failing updating user because no username
+	 */
+	public function testFailUpdateUserNoUsername() {
+		$response = $this->json( 'PATCH', '/api/user', [ 'name' => 'Connor' ] );
+		$response->assertStatus( 405 );
+	}
+	
+	/**
+	 * Test fail to update user because of no JSON data
+	 */
+	public function testFailUpdateUserNoData() {
+		$response = $this->json( 'PATCH', '/api/user/Actually Connor', [] );
+		$response->assertStatus( 400 );
+	}
+	
+	/**
+	 * Test removing user from database
+	 */
+	public function testRemoveUser() {
 		$response = $this->json( 'DELETE', '/api/user/Actually Connor' );
 		$response->assertStatus( 200 );
 	}
 	
-	public function testFailRemoveUserFromDatabase() {
+	/**
+	 * Test failing to remove user from database because of bad username
+	 */
+	public function testFailRemoveUserBadUsername() {
 		$response = $this->json( 'DELETE', '/api/user/dopey' );
 		$response->assertStatus( 404 );
+	}
+	
+	/**
+	 * Test failing to remove from database because of no username
+	 */
+	public function testFailRemoveUserNoUsername() {
+		$response = $this->json( 'DELETE', '/api/user' );
+		$response->assertStatus( 405 );
 	}
 }

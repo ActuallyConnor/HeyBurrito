@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\DebugHelper;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
 use App\Helpers\ResponseHelper;
 use App\Slack\SlackUserData;
@@ -12,17 +14,16 @@ class UserController extends Controller {
 	/**
 	 * Display a listing of the resource.
 	 *
-	 * @return \Illuminate\Http\Response
+	 * @return Response
 	 */
 	public function index() {
-		$member = SlackUserData::getUserInformationFromSlack( 'Actually Connor' );
-		var_dump( $member );
+		var_dump( DebugHelper::get_called_method() );
 	}
 	
 	/**
 	 * Show the form for creating a new resource.
 	 *
-	 * @return \Illuminate\Http\Response
+	 * @return Response
 	 */
 	public function create() {
 		//
@@ -31,30 +32,30 @@ class UserController extends Controller {
 	/**
 	 * Store a newly created resource in storage.
 	 *
-	 * @param \Illuminate\Http\Request $request
-	 * @return \Illuminate\Http\Response
+	 * @param Request $request
+	 * @return Response
 	 */
 	public function store( Request $request ) {
 		$data = $request->json();
 		
-		if ( empty( $data ) ) {
-			return ResponseHelper::logAndSendErrorResponse( '' . 'No JSON body in request' );
+		if ( empty( $data->all() ) ) {
+			return ResponseHelper::logAndSendErrorResponse( DebugHelper::get_called_method(), 'No JSON body in request' );
 		}
 		if ( !$data->has( 'username' ) ) {
-			return ResponseHelper::logAndSendErrorResponse( 'username' );
+			return ResponseHelper::logAndSendErrorResponse( DebugHelper::get_called_method(), 'No username in JSON data' );
 		}
 		
 		$username = $data->get( 'username' );
 		$user_info = SlackUserData::getUserInformationFromSlack( $username );
 		
 		if ( !$user_info ) {
-			return ResponseHelper::logAndSendErrorResponse( '', 'Unable to get userdata from slack', 500 );
+			return ResponseHelper::logAndSendErrorResponse( DebugHelper::get_called_method(), 'Unable to get userdata from slack', 500 );
 		}
 		
 		$user = new User();
 		
 		if ( !empty( $user->where( 'user_id', $user_info->id )->first() ) ) {
-			return ResponseHelper::logAndSendErrorResponse( '', 'User already exists in the database', 409 );
+			return ResponseHelper::logAndSendErrorResponse( DebugHelper::get_called_method(), 'User already exists in the database', 409 );
 		}
 		
 		$user->name = $user_info->real_name;
@@ -68,7 +69,7 @@ class UserController extends Controller {
 		$userAdded = $user->save();
 		
 		if ( !$userAdded ) {
-			return ResponseHelper::logAndSendErrorResponse( '', 'User unable to be added to database', 500 );
+			return ResponseHelper::logAndSendErrorResponse( DebugHelper::get_called_method(), 'User unable to be added to database', 500 );
 		}
 		
 		Log::info( 'User successfully added' );
@@ -79,7 +80,7 @@ class UserController extends Controller {
 	 * Display the specified resource.
 	 *
 	 * @param int $id
-	 * @return \Illuminate\Http\Response
+	 * @return Response
 	 */
 	public function show( $id ) {
 		//
@@ -89,7 +90,7 @@ class UserController extends Controller {
 	 * Show the form for editing the specified resource.
 	 *
 	 * @param int $id
-	 * @return \Illuminate\Http\Response
+	 * @return Response
 	 */
 	public function edit( $id ) {
 		//
@@ -98,38 +99,54 @@ class UserController extends Controller {
 	/**
 	 * Update the specified resource in storage.
 	 *
-	 * @param \Illuminate\Http\Request $request
-	 * @param int $id
-	 * @return \Illuminate\Http\Response
+	 * @param Request $request
+	 * @param $username
+	 * @return Response
 	 */
-	public function update( Request $request, $id ) {
-		//
+	public function update( Request $request, $username ) {
+		
+		$data = $request->json();
+		
+		if ( empty( $data->all() ) ) {
+			return ResponseHelper::logAndSendErrorResponse( DebugHelper::get_called_method(), 'No JSON body in request' );
+		}
+		
+		$user = new User();
+
+//		if ( $data->has( 'name' ) ) {
+//			Log::info($data->get('name'));
+//		}
+//
+//		if ( $data->has( 'username' ) ) {
+//
+//		}
+		return response( sprintf( 'Updated %s user in database', $username ) );
 	}
 	
 	/**
 	 * Remove the specified resource from storage.
 	 *
-	 * @param int $id
-	 * @return \Illuminate\Http\Response
+	 * @param int $username
+	 * @return Response
 	 */
-	public function destroy( $id ) {
+	public function destroy( $username ) {
 		
-		if ( empty( $id ) ) {
-			return ResponseHelper::logAndSendErrorResponse( '' . 'No id passed to destroy request' );
+		if ( empty( $username ) ) {
+			return ResponseHelper::logAndSendErrorResponse( DebugHelper::get_called_method(), 'No id passed to destroy request' );
 		}
 		
 		$user = new User();
 		
-		$user_from_db = $user->where( 'username', $id )->first();
+		$user_from_db = $user->where( 'username', $username )->first();
 		
 		if ( empty( $user_from_db ) ) {
-			return ResponseHelper::logAndSendErrorResponse( '', 'User does not exist in the database', 404 );
+			return ResponseHelper::logAndSendErrorResponse( DebugHelper::get_called_method(), 'User does not exist in the database', 404 );
 		}
 		
 		$user_from_db->delete();
 		
 		
-		Log::info( sprintf( 'User %s removed from database', $id ) );
+		Log::info( sprintf( 'User %s removed from database', $username ) );
 		return response( 'User removed from database' );
 	}
 }
