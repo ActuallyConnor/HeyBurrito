@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\DebugHelper;
+use App\Http\Middleware\TokenAuth;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -11,6 +12,15 @@ use App\Helpers\ResponseHelper;
 use App\Slack\SlackUserData;
 
 class UserController extends Controller {
+	
+	/**
+	 * Instantiate a new controller instance.
+	 * @return void
+	 */
+	public function __construct() {
+		$this->middleware( TokenAuth::class );
+	}
+	
 	/**
 	 * Display a listing of the resource.
 	 *
