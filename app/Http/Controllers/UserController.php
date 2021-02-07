@@ -26,8 +26,8 @@ class UserController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function index() {
-	
+	public function index(): Response {
+		return response( 'Index is working' );
 	}
 	
 	/**

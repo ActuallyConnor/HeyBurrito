@@ -23,4 +23,7 @@ Route::middleware( 'auth:api' )->get( '/user', function( Request $request ) {
 
 Route::post( '/burrito', [ BurritoController::class, 'giveBurrito' ] );
 
-Route::resource( 'user', UserController::class );
+Route::resource( 'user', UserController::class )
+	->except( [
+		'create', 'show', 'edit'
+	] );
