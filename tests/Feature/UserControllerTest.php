@@ -17,6 +17,9 @@ class UserControllerTest extends TestCase {
 		$this->assertIsObject( new UserController() );
 	}
 	
+	/**
+	 * Test index resolves when token is provided
+	 */
 	public function testUserControllerIndex() {
 		$response = $this->json(
 			'GET',
@@ -25,6 +28,31 @@ class UserControllerTest extends TestCase {
 			[ 'hey-burrito-token' => env( 'HEY_BURRITO_AUTH_TOKEN' ) ]
 		);
 		$response->assertStatus( 200 );
+	}
+	
+	/**
+	 * Test index redirects when incorrect token is provided
+	 */
+	public function testFailUserControllerIndexBadAuth() {
+		$response = $this->json(
+			'GET',
+			'/api/user',
+			[],
+			[ 'hey-burrito-token' => strrev( env( 'HEY_BURRITO_AUTH_TOKEN' ) ) ]
+		);
+		$response->assertStatus( 302 );
+	}
+	
+	/**
+	 * Test index redirects when no token is provided
+	 */
+	public function testFailUserControllerIndexNoAuth() {
+		$response = $this->json(
+			'GET',
+			'/api/user',
+			[],
+		);
+		$response->assertStatus( 302 );
 	}
 	
 	/**

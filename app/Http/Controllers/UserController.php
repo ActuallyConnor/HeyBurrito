@@ -27,7 +27,7 @@ class UserController extends Controller {
 	 * @return Response
 	 */
 	public function index() {
-		var_dump( DebugHelper::get_called_method() );
+	
 	}
 	
 	/**
