@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\EventController;
 use App\Http\Middleware\TokenAuth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -18,12 +19,19 @@ use App\Http\Controllers\UserController;
 */
 
 Route::middleware( 'auth:api' )->get( '/user', function( Request $request ) {
-	return $request->user();
+    return $request->user();
 } );
 
-Route::post( '/burrito', [ BurritoController::class, 'giveBurrito' ] );
+Route::post( '/burrito', [
+    BurritoController::class,
+    'giveBurrito'
+] );
 
 Route::resource( 'user', UserController::class )
-	->except( [
-		'create', 'show', 'edit'
-	] );
+    ->except( [
+        'create',
+        'show',
+        'edit'
+    ] );
+
+Route::resource( 'event', EventController::class );
