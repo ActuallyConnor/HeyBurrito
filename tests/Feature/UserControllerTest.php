@@ -9,14 +9,14 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class UserControllerTest extends TestCase {
-	
+
 	/**
 	 * Test creating user controller object
 	 */
 	public function testCreateUserControllerObject() {
 		$this->assertIsObject( new UserController() );
 	}
-	
+
 	/**
 	 * Test index resolves when token is provided
 	 */
@@ -29,7 +29,7 @@ class UserControllerTest extends TestCase {
 		);
 		$response->assertStatus( 200 );
 	}
-	
+
 	/**
 	 * Test index redirects when incorrect token is provided
 	 */
@@ -42,7 +42,7 @@ class UserControllerTest extends TestCase {
 		);
 		$response->assertStatus( 302 );
 	}
-	
+
 	/**
 	 * Test index redirects when no token is provided
 	 */
@@ -54,7 +54,7 @@ class UserControllerTest extends TestCase {
 		);
 		$response->assertStatus( 302 );
 	}
-	
+
 	/**
 	 * Test creating user in the database
 	 */
@@ -68,16 +68,17 @@ class UserControllerTest extends TestCase {
 				[ 'hey-burrito-token' => env( 'HEY_BURRITO_AUTH_TOKEN' ) ]
 			);
 		}
-		
-		$response = $this->json( 'POST',
+
+		$response = $this->json(
+		    'POST',
 			'/api/user',
 			[ 'username' => 'Actually Connor' ],
 			[ 'hey-burrito-token' => env( 'HEY_BURRITO_AUTH_TOKEN' ) ]
 		);
-		
+
 		$response->assertStatus( 201 );
 	}
-	
+
 	/**
 	 * Test failing creating user because no JSON data
 	 */
@@ -88,9 +89,9 @@ class UserControllerTest extends TestCase {
 			[],
 			[ 'hey-burrito-token' => env( 'HEY_BURRITO_AUTH_TOKEN' ) ]
 		);
-		$response->assertStatus( 400 );
+		$response->assertStatus( 500 );
 	}
-	
+
 	/**
 	 * Test failing creating user because of bad username
 	 */
@@ -102,7 +103,7 @@ class UserControllerTest extends TestCase {
 		);
 		$response->assertStatus( 500 );
 	}
-	
+
 	/**
 	 * Test failing creating user because of bad username
 	 */
@@ -115,7 +116,7 @@ class UserControllerTest extends TestCase {
 		);
 		$response->assertStatus( 500 );
 	}
-	
+
 	/**
 	 * Test updating user in database
 	 */
@@ -128,7 +129,7 @@ class UserControllerTest extends TestCase {
 		);
 		$response->assertStatus( 200 );
 	}
-	
+
 	/**
 	 * Test update user data validation
 	 */
@@ -148,7 +149,7 @@ class UserControllerTest extends TestCase {
 		);
 		$response->assertStatus( 200 );
 	}
-	
+
 	/**
 	 * Test fail update user data validation
 	 */
@@ -161,7 +162,7 @@ class UserControllerTest extends TestCase {
 		);
 		$response->assertStatus( 200 );
 	}
-	
+
 	/**
 	 * Test failing updating user because no username
 	 */
@@ -174,7 +175,7 @@ class UserControllerTest extends TestCase {
 		);
 		$response->assertStatus( 405 );
 	}
-	
+
 	/**
 	 * Test fail to update user because of no JSON data
 	 */
@@ -187,7 +188,7 @@ class UserControllerTest extends TestCase {
 		);
 		$response->assertStatus( 400 );
 	}
-	
+
 	/**
 	 * Test removing user from database
 	 */
@@ -200,7 +201,7 @@ class UserControllerTest extends TestCase {
 				[ 'hey-burrito-token' => env( 'HEY_BURRITO_AUTH_TOKEN' ) ]
 			);
 		}
-		
+
 		$response = $this->json(
 			'DELETE',
 			'/api/user/UH8LSF3NV',
@@ -209,7 +210,7 @@ class UserControllerTest extends TestCase {
 		);
 		$response->assertStatus( 200 );
 	}
-	
+
 	/**
 	 * Test failing to remove user from database because of bad username
 	 */
@@ -222,7 +223,7 @@ class UserControllerTest extends TestCase {
 		);
 		$response->assertStatus( 404 );
 	}
-	
+
 	/**
 	 * Test failing to remove from database because of no username
 	 */
