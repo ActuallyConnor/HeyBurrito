@@ -118,6 +118,29 @@ class UserControllerTest extends TestCase {
 		$response->assertStatus( 500 );
 	}
 
+    /**
+     *
+     */
+    public function testFailToCreateUserThatAlreadyExists() {
+        if ( empty( User::where( 'user_id', 'UH8LSF3NV' )->first() ) ) {
+            $create_response = $this->json(
+                'POST',
+                '/api/user',
+                [ 'username' => 'Actually Connor' ],
+                [ 'hey-burrito-token' => env( 'HEY_BURRITO_AUTH_TOKEN' ) ]
+            );
+        }
+
+        $response = $this->json(
+            'POST',
+            '/api/user',
+            [ 'username' => 'Actually Connor' ],
+            [ 'hey-burrito-token' => env( 'HEY_BURRITO_AUTH_TOKEN' ) ]
+        );
+
+        $response->assertStatus( 409 );
+    }
+
 	/**
 	 * Test updating user in database
 	 */
@@ -152,9 +175,9 @@ class UserControllerTest extends TestCase {
 	}
 
 	/**
-	 * Test fail to update user data validation
+	 * Test that it does not break when we fail data validation
 	 */
-	public function testFailToUpdateUserDataValidation() {
+	public function testDoesNotBreakWhenUpdatingUserDataFailsValidation() {
 		$response = $this->json(
 			'PATCH',
 			'/api/user/UH8LSF3NV',
