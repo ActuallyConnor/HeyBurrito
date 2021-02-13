@@ -11,7 +11,7 @@ use Tests\TestCase;
 class UserControllerTest extends TestCase {
 
 	/**
-	 * Test creating user controller object
+	 * Test create user controller object
 	 */
 	public function testCreateUserControllerObject() {
 		$this->assertIsObject( new UserController() );
@@ -56,7 +56,7 @@ class UserControllerTest extends TestCase {
 	}
 
 	/**
-	 * Test creating user in the database
+	 * Test create user in the database
 	 */
 	public function testCreatingUser() {
 		// Delete user if they already exist before attempting to add them to the database
@@ -80,7 +80,7 @@ class UserControllerTest extends TestCase {
 	}
 
 	/**
-	 * Test FailToing creating user because no JSON data
+	 * Test fail to create user because no JSON data
 	 */
 	public function testFailToCreatingUserNoJson() {
 		$response = $this->json(
@@ -93,7 +93,7 @@ class UserControllerTest extends TestCase {
 	}
 
 	/**
-	 * Test FailToing creating user because of bad username
+	 * Test fail to create user because of bad username
 	 */
 	public function testFailToCreatingUserBadUsername() {
 		$response = $this->json(
@@ -106,7 +106,7 @@ class UserControllerTest extends TestCase {
 	}
 
 	/**
-	 * Test FailToing creating user because of bad username
+	 * Test fail to create user because of bad username
 	 */
 	public function testFailToCreatingUserNoUsername() {
 		$response = $this->json(
@@ -152,7 +152,7 @@ class UserControllerTest extends TestCase {
 	}
 
 	/**
-	 * Test FailTo update user data validation
+	 * Test fail to update user data validation
 	 */
 	public function testFailToUpdateUserDataValidation() {
 		$response = $this->json(
@@ -165,7 +165,7 @@ class UserControllerTest extends TestCase {
 	}
 
 	/**
-	 * Test FailToing updating user because no username
+	 * Test fail to updating user because no username
 	 */
 	public function testFailToUpdateUserNoUsername() {
 		$response = $this->json(
@@ -178,7 +178,7 @@ class UserControllerTest extends TestCase {
 	}
 
 	/**
-	 * Test FailTo to update user because of no JSON data
+	 * Test fail to update user because of no JSON data
 	 */
 	public function testFailToUpdateUserNoData() {
 		$response = $this->json(
@@ -213,7 +213,7 @@ class UserControllerTest extends TestCase {
 	}
 
 	/**
-	 * Test FailToing to remove user from database because of bad username
+	 * Test fail to remove user from database because of bad username
 	 */
 	public function testFailToRemoveUserBadUsername() {
 		$response = $this->json(
@@ -226,7 +226,7 @@ class UserControllerTest extends TestCase {
 	}
 
 	/**
-	 * Test FailToing to remove from database because of no username
+	 * Test fail to remove from database because of no username
 	 */
 	public function testFailToRemoveUserNoUsername() {
 		$response = $this->json(

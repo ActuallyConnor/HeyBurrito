@@ -119,6 +119,7 @@ class UserController extends Controller {
      * @param Request $request
      * @param $user_id
      * @return Response
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function update( Request $request, $user_id ): Response {
 
@@ -128,21 +129,24 @@ class UserController extends Controller {
             return ResponseHelper::logAndErrorResponse( 'No JSON body in request' );
         }
 
-//        $validator = Validator::make($request->all(), [
-//            'name' => [
-//                ''
-//            ]
-//        ]);
+        $validator = Validator::make( $request->all(), [
+            'name' => [ 'string' ],
+            'username' => [ 'string' ],
+            'active' => [ 'boolean' ],
+            'total_received' => [ 'integer' ],
+            'total_given' => [ 'integer' ],
+            'total_redeemable' => [ 'integer' ]
+        ] );
 
-        $message_arr = array();
-        array_push( $message_arr,
-            $this->handleUserRequestData( $user_id, $data, 'name', 'string' ),
-            $this->handleUserRequestData( $user_id, $data, 'username', 'string' ),
-            $this->handleUserRequestData( $user_id, $data, 'active', 'boolean' ),
-            $this->handleUserRequestData( $user_id, $data, 'total_received', 'integer' ),
-            $this->handleUserRequestData( $user_id, $data, 'total_given', 'integer' ),
-            $this->handleUserRequestData( $user_id, $data, 'total_redeemable', 'integer' )
-        );
+        if ( $validator->fails() ) {
+            return response( $validator->getMessageBag(), 500 );
+        }
+
+        $validated = $validator->validated();
+        foreach ( $validated as $key => $value ) {
+            User::where( 'user_id', $user_id )
+                ->update( [ $key => $value ] );
+        }
 
         Log::info( sprintf( 'User %s successfully updated', $user_id ) );
         return response( sprintf( print_r( [
@@ -154,26 +158,13 @@ class UserController extends Controller {
      * @param $user_id
      * @param $data
      * @param string $value
-     * @param string $data_type
      * @return string
      */
-    private function handleUserRequestData( $user_id, $data, string $value, string $data_type = '' ): string {
-        if ( $data->has( $value ) ) {
-            if ( gettype( $data->get( $value ) === $data_type ) ) {
-                User::where( 'user_id', $user_id )
-                    ->update( [$value => $data->get( $value )] );
-                Log::info( sprintf( 'Data value %s has been updated', $value ) );
-                return sprintf( 'Data value %s has been updated', $value );
-            }
-            else {
-                Log::error( sprintf( 'Data value %s does not equal data type %s', $value, $data_type ) );
-                return sprintf( 'Data value %s does not equal data type %s', $value, $data_type );
-            }
-        }
-        else {
-            Log::info( sprintf( 'Data value %s not in JSON body', $value ) );
-            return sprintf( 'Data value %s not in JSON body', $value );
-        }
+    private function handleUserRequestData( $user_id, $data, string $value ): string {
+        User::where( 'user_id', $user_id )
+            ->update( [ $value => $data->get( $value ) ] );
+        Log::info( sprintf( 'Data value %s has been updated', $value ) );
+        return sprintf( 'Data value %s has been updated', $value );
     }
 
     /**
