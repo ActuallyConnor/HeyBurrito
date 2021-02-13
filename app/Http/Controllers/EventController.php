@@ -14,7 +14,7 @@ class EventController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function index() {
-        return response('GET /api/event');
+        return response( 'GET /api/event' );
     }
 
     /**
@@ -33,7 +33,11 @@ class EventController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function store( Request $request ) {
-        return response('POST /api/event');
+        $data = $request->json();
+        if ( $data->has( 'challenge' ) ) {
+            return $this->slackChallenge( $request );
+        }
+        return response( 'POST /api/event' );
     }
 
     private function slackChallenge( Request $request ) {
@@ -50,11 +54,7 @@ class EventController extends Controller {
             return ResponseHelper::logAndErrorResponse( 'Unable to get userdata from slack', 500 );
         }
 
-        return response()
-            ->json( [
-                'challenge' => $request->json()->get( 'challenge' )
-            ] )
-            ->header( 'Access-Control-Allow-Origin', '*' );
+        return response( ['challenge' => $request->json()->get( 'challenge' )] );
     }
 
     /**

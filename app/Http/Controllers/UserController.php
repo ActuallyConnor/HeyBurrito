@@ -128,6 +128,12 @@ class UserController extends Controller {
             return ResponseHelper::logAndErrorResponse( 'No JSON body in request' );
         }
 
+//        $validator = Validator::make($request->all(), [
+//            'name' => [
+//                ''
+//            ]
+//        ]);
+
         $message_arr = array();
         array_push( $message_arr,
             $this->handleUserRequestData( $user_id, $data, 'name', 'string' ),

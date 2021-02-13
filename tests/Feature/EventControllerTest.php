@@ -13,7 +13,7 @@ class EventControllerTest extends TestCase {
      * Test creating event controller object
      */
     public function testCreatingEventControllerObject() {
-        $this->assertIsObject(new EventController());
+        $this->assertIsObject( new EventController() );
     }
 
     public function testEventGetEndpoint() {
@@ -21,15 +21,31 @@ class EventControllerTest extends TestCase {
             'GET',
             '/api/event'
         );
-        $response->assertStatus(200);
+        $response->assertStatus( 200 );
     }
 
     public function testEventPostEndpoint() {
         $response = $this->json(
-            'post',
+            'POST',
             '/api/event',
             []
         );
-        $response->assertStatus(200);
+        $response->assertStatus( 200 );
+    }
+
+    public function testSlackChallenge() {
+        $challenge = 'this_is_the_challenge';
+        $response = $this->json(
+            'POST',
+            '/api/event',
+            [
+                'challenge' => $challenge
+            ]
+        );
+        $response
+            ->assertStatus( 200 )
+            ->assertJson( [
+                'challenge' => $challenge
+            ] );
     }
 }
