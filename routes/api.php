@@ -18,15 +18,6 @@ use App\Http\Controllers\UserController;
 |
 */
 
-Route::middleware( 'auth:api' )->get( '/user', function( Request $request ) {
-    return $request->user();
-} );
-
-Route::post( '/burrito', [
-    BurritoController::class,
-    'giveBurrito'
-] );
-
 Route::resource( 'user', UserController::class )
     ->except( [
         'create',
@@ -34,4 +25,9 @@ Route::resource( 'user', UserController::class )
         'edit'
     ] );
 
-Route::resource( 'event', EventController::class );
+Route::resource( 'event', EventController::class )
+    ->except( [
+        'create',
+        'show',
+        'edit'
+    ] );

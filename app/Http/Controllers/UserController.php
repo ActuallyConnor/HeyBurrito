@@ -66,13 +66,13 @@ class UserController extends Controller {
         $user_info = SlackUserData::getUserInformationFromSlack( $username );
 
         if ( !$user_info ) {
-            return ResponseHelper::logAndSendErrorResponse( DebugHelper::get_called_method(), 'Unable to get userdata from slack', 500 );
+            return ResponseHelper::logAndErrorResponse( 'Unable to get userdata from slack', 500 );
         }
 
         $user = new User();
 
         if ( !empty( $user->where( 'user_id', $user_info->id )->first() ) ) {
-            return ResponseHelper::logAndSendErrorResponse( DebugHelper::get_called_method(), 'User already exists in the database', 409 );
+            return ResponseHelper::logAndErrorResponse( 'User already exists in the database', 409 );
         }
 
         $user->name = $user_info->real_name;
@@ -86,7 +86,7 @@ class UserController extends Controller {
         $userAdded = $user->save();
 
         if ( !$userAdded ) {
-            return ResponseHelper::logAndSendErrorResponse( DebugHelper::get_called_method(), 'User unable to be added to database', 500 );
+            return ResponseHelper::logAndErrorResponse( 'User unable to be added to database', 500 );
         }
 
         Log::info( 'User successfully added' );
@@ -125,7 +125,7 @@ class UserController extends Controller {
         $data = $request->json();
 
         if ( empty( $data->all() ) ) {
-            return ResponseHelper::logAndSendErrorResponse( DebugHelper::get_called_method(), 'No JSON body in request' );
+            return ResponseHelper::logAndErrorResponse( 'No JSON body in request' );
         }
 
         $message_arr = array();
@@ -179,7 +179,7 @@ class UserController extends Controller {
     public function destroy( $user_id ) {
 
         if ( empty( $user_id ) ) {
-            return ResponseHelper::logAndSendErrorResponse( DebugHelper::get_called_method(), 'No id passed to destroy request' );
+            return ResponseHelper::logAndErrorResponse( 'No id passed to destroy request' );
         }
 
         $user = new User();
@@ -187,7 +187,7 @@ class UserController extends Controller {
         $user_from_db = $user->where( 'user_id', $user_id )->first();
 
         if ( empty( $user_from_db ) ) {
-            return ResponseHelper::logAndSendErrorResponse( DebugHelper::get_called_method(), 'User does not exist in the database', 404 );
+            return ResponseHelper::logAndErrorResponse( 'User does not exist in the database', 404 );
         }
 
         $user_from_db->delete();

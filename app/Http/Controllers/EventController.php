@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\DebugHelper;
+use App\Helpers\ResponseHelper;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class EventController extends Controller {
     /**
@@ -30,7 +33,30 @@ class EventController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function store( Request $request ) {
-        //
+        $validator = Validator::make($request->all(), [
+
+        ]);
+    }
+
+    private function slackChallenge( Request $request ) {
+
+        $validator = Validator::make( $request->all(), [
+            'challenge' => [
+                'bail',
+                'required',
+                'string'
+            ]
+        ] );
+
+        if ( $validator->fails() ) {
+            return ResponseHelper::logAndErrorResponse( 'Unable to get userdata from slack', 500 );
+        }
+
+        return response()
+            ->json( [
+                'challenge' => $request->json()->get( 'challenge' )
+            ] )
+            ->header( 'Access-Control-Allow-Origin', '*' );
     }
 
     /**
