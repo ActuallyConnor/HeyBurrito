@@ -14,7 +14,7 @@ class EventController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function index() {
-        //
+        return response('GET /api/event');
     }
 
     /**
@@ -33,9 +33,7 @@ class EventController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function store( Request $request ) {
-        $validator = Validator::make($request->all(), [
-
-        ]);
+        return response('POST /api/event');
     }
 
     private function slackChallenge( Request $request ) {

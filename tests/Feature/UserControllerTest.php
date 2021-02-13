@@ -33,7 +33,7 @@ class UserControllerTest extends TestCase {
 	/**
 	 * Test index redirects when incorrect token is provided
 	 */
-	public function testFailUserControllerIndexBadAuth() {
+	public function testFailToUserControllerIndexBadAuth() {
 		$response = $this->json(
 			'GET',
 			'/api/user',
@@ -46,7 +46,7 @@ class UserControllerTest extends TestCase {
 	/**
 	 * Test index redirects when no token is provided
 	 */
-	public function testFailUserControllerIndexNoAuth() {
+	public function testFailToUserControllerIndexNoAuth() {
 		$response = $this->json(
 			'GET',
 			'/api/user',
@@ -80,9 +80,9 @@ class UserControllerTest extends TestCase {
 	}
 
 	/**
-	 * Test failing creating user because no JSON data
+	 * Test FailToing creating user because no JSON data
 	 */
-	public function testFailCreatingUserNoJson() {
+	public function testFailToCreatingUserNoJson() {
 		$response = $this->json(
 			'POST',
 			'/api/user',
@@ -93,10 +93,11 @@ class UserControllerTest extends TestCase {
 	}
 
 	/**
-	 * Test failing creating user because of bad username
+	 * Test FailToing creating user because of bad username
 	 */
-	public function testFailCreatingUserBadUsername() {
-		$response = $this->json( 'POST',
+	public function testFailToCreatingUserBadUsername() {
+		$response = $this->json(
+		    'POST',
 			'/api/user',
 			[ 'username' => 'dopey' ],
 			[ 'hey-burrito-token' => env( 'HEY_BURRITO_AUTH_TOKEN' ) ]
@@ -105,9 +106,9 @@ class UserControllerTest extends TestCase {
 	}
 
 	/**
-	 * Test failing creating user because of bad username
+	 * Test FailToing creating user because of bad username
 	 */
-	public function testFailCreatingUserNoUsername() {
+	public function testFailToCreatingUserNoUsername() {
 		$response = $this->json(
 			'POST',
 			'/api/user',
@@ -151,9 +152,9 @@ class UserControllerTest extends TestCase {
 	}
 
 	/**
-	 * Test fail update user data validation
+	 * Test FailTo update user data validation
 	 */
-	public function testFailUpdateUserDataValidation() {
+	public function testFailToUpdateUserDataValidation() {
 		$response = $this->json(
 			'PATCH',
 			'/api/user/UH8LSF3NV',
@@ -164,9 +165,9 @@ class UserControllerTest extends TestCase {
 	}
 
 	/**
-	 * Test failing updating user because no username
+	 * Test FailToing updating user because no username
 	 */
-	public function testFailUpdateUserNoUsername() {
+	public function testFailToUpdateUserNoUsername() {
 		$response = $this->json(
 			'PATCH',
 			'/api/user',
@@ -177,9 +178,9 @@ class UserControllerTest extends TestCase {
 	}
 
 	/**
-	 * Test fail to update user because of no JSON data
+	 * Test FailTo to update user because of no JSON data
 	 */
-	public function testFailUpdateUserNoData() {
+	public function testFailToUpdateUserNoData() {
 		$response = $this->json(
 			'PATCH',
 			'/api/user/Actually Connor',
@@ -212,9 +213,9 @@ class UserControllerTest extends TestCase {
 	}
 
 	/**
-	 * Test failing to remove user from database because of bad username
+	 * Test FailToing to remove user from database because of bad username
 	 */
-	public function testFailRemoveUserBadUsername() {
+	public function testFailToRemoveUserBadUsername() {
 		$response = $this->json(
 			'DELETE',
 			'/api/user/dopey',
@@ -225,9 +226,9 @@ class UserControllerTest extends TestCase {
 	}
 
 	/**
-	 * Test failing to remove from database because of no username
+	 * Test FailToing to remove from database because of no username
 	 */
-	public function testFailRemoveUserNoUsername() {
+	public function testFailToRemoveUserNoUsername() {
 		$response = $this->json(
 			'DELETE',
 			'/api/user',
