@@ -24,13 +24,41 @@ class EventControllerTest extends TestCase {
         $response->assertStatus( 200 );
     }
 
-    public function testEventPostEndpoint() {
+    public function testCoreEventPostValidation() {
+        $json_data = '{
+    "token": "ZZZZZZWSxiZZZ2yIvs3peJ",
+    "team_id": "T061EG9R6",
+    "api_app_id": "A0MDYCDME",
+    "event": {
+        "type": "app_mention",
+        "user": "W021FGA1Z",
+        "text": "You can count on <@U0LAN0Z89> for an honorable mention.",
+        "ts": "1515449483.000108",
+        "channel": "C0LAN2Q65",
+        "event_ts": "1515449483000108"
+    },
+    "type": "event_callback",
+    "event_id": "Ev0MDYHUEL",
+    "event_time": 1515449483000108,
+    "authed_users": [
+        "U0LAN0Z89"
+    ]
+}';
+        $response = $this->json(
+            'POST',
+            '/api/event',
+            json_decode( $json_data, true )
+        );
+        $response->assertStatus( 200 );
+    }
+
+    public function testCoreEventPostValidationFailure() {
         $response = $this->json(
             'POST',
             '/api/event',
             []
         );
-        $response->assertStatus( 200 );
+        $response->assertStatus( 500 );
     }
 
     public function testSlackChallenge() {

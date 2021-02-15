@@ -45,10 +45,9 @@ class UserController extends Controller {
      *
      * @param Request $request
      * @return Response
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function store( Request $request ) {
-        $data = $request->json();
-
         $validator = Validator::make( $request->all(), [
             'username' => [
                 'bail',
@@ -62,7 +61,7 @@ class UserController extends Controller {
             return response( $validator->getMessageBag(), 500 );
         }
 
-        $username = $data->get( 'username' );
+        $username = $validator->validated()[ 'username' ];
         $user_info = SlackUserData::getUserInformationFromSlack( $username );
 
         if ( !$user_info ) {
@@ -188,7 +187,6 @@ class UserController extends Controller {
         }
 
         $user_from_db->delete();
-
 
         Log::info( sprintf( 'User %s removed from database', $user_id ) );
         return response( 'User removed from database' );

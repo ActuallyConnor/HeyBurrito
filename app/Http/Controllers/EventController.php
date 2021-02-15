@@ -31,30 +31,78 @@ class EventController extends Controller {
      *
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function store( Request $request ) {
-        $data = $request->json();
-        if ( $data->has( 'challenge' ) ) {
-            return $this->slackChallenge( $request );
+
+        // Is this a challenge request to initiate Slack API endpoint?
+        if ( $request->json()->has( 'challenge' ) ) {
+            return response( [ 'challenge' => $request->json()->get( 'challenge' ) ] );
         }
+
+        $validator = $this->validateSlackPostData( $request->all() );
+
+        if ( $validator->fails() ) {
+            return ResponseHelper::logAndErrorResponse( $validator->getMessageBag(), 500 );
+        }
+
+        $validated = $validator->validated();
+
         return response( 'POST /api/event' );
     }
 
-    private function slackChallenge( Request $request ) {
-
-        $validator = Validator::make( $request->all(), [
-            'challenge' => [
+    /**
+     * Validate core data coming from Slack POST Event request
+     *
+     * @param $data
+     * @return \Illuminate\Contracts\Validation\Validator
+     */
+    private function validateSlackPostData( $data ) {
+        return Validator::make( $data, [
+            'api_app_id' => [
+                'bail',
+                'required',
+                'string',
+                function( $attr, $value, $fail ) {
+                    if ( $value !== env( 'API_APP_ID' ) ) {
+                        $fail( 'The ' . $attr . ' from Slack does not match what is expected' );
+                    }
+                }
+            ],
+            'event' => [
+                'bail',
+                'required',
+                'array'
+            ],
+            'type' => [
+                'bail',
+                'required',
+                'string',
+            ],
+            'event_id' => [
                 'bail',
                 'required',
                 'string'
+            ],
+            'event_time' => [ // Unix time
+                'bail',
+                'required',
+                'int'
+            ],
+            'authed_users' => [
+                'bail',
+                'required',
+                function( $attr, $value, $fail ) {
+                    if ( $value[ 0 ] !== env( 'AUTHED_USER' ) ) {
+                        $fail( 'The ' . $attr . ' from Slack does not match what is expected' );
+                    }
+                }
             ]
         ] );
+    }
 
-        if ( $validator->fails() ) {
-            return ResponseHelper::logAndErrorResponse( 'Unable to get userdata from slack', 500 );
-        }
+    private function validateEventData( $eventData ) {
 
-        return response( ['challenge' => $request->json()->get( 'challenge' )] );
     }
 
     /**
