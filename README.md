@@ -47,3 +47,46 @@ the function is operating correctly.
 3. Subscribe to the following bot events: `app_mention` and `message.channels`
 4. Click _'Save Changes'_
 5. Revert back your `routes/api.php` file.
+
+## Events
+
+### Core Event Data
+
+```json
+{
+    "token": "ZZZZZZWSxiZZZ2yIvs3peJ",
+    "team_id": "T061EG9R6",
+    "api_app_id": "A0MDYCDME",
+    "event": {
+        ...
+    },
+    "type": "event_callback",
+    "event_id": "Ev0MDYHUEL",
+    "event_time": 1515449483000108,
+    "authed_users": [
+        "U0LAN0Z89"
+    ]
+}
+```
+
+### Message Event
+
+Requires `channel.history` permission
+
+#### Sample data
+
+```json
+{
+    ...,
+    "event": {
+        "type": "message",
+        "channel": "C2147483705",
+        "user": "U2147483697",
+        "text": "Hello world",
+        "ts": "1355517523.000005"
+    },
+    ...
+}
+```
+
+### App mention
