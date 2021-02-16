@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
+use App\Slack\Event\SlackEventFactory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -39,69 +40,16 @@ class EventController extends Controller {
             return response( [ 'challenge' => $request->json()->get( 'challenge' ) ] );
         }
 
-        $validator = $this->validateSlackPostData( $request->all() );
+        $slackEventFactory = new SlackEventFactory();
+        $slackEvent = $slackEventFactory->createEvent( 'app_mention' );
 
-        if ( $validator->fails() ) {
-            return ResponseHelper::logAndErrorResponse( $validator->getMessageBag(), 500 );
+        $slackEvent->validateData( $request->all() );
+
+        if ( !$slackEvent->validated ) {
+            return ResponseHelper::logAndErrorResponse( $slackEvent->errorMessage, 500 );
         }
 
-        $validated = $validator->validated();
-
         return response( 'POST /api/event' );
-    }
-
-    /**
-     * Validate core data coming from Slack POST Event request
-     *
-     * @param $data
-     * @return \Illuminate\Contracts\Validation\Validator
-     */
-    private function validateSlackPostData( $data ) {
-        return Validator::make( $data, [
-            'api_app_id' => [
-                'bail',
-                'required',
-                'string',
-                function( $attr, $value, $fail ) {
-                    if ( $value !== env( 'API_APP_ID' ) ) {
-                        $fail( 'The ' . $attr . ' from Slack does not match what is expected' );
-                    }
-                }
-            ],
-            'event' => [
-                'bail',
-                'required',
-                'array'
-            ],
-            'type' => [
-                'bail',
-                'required',
-                'string',
-            ],
-            'event_id' => [
-                'bail',
-                'required',
-                'string'
-            ],
-            'event_time' => [ // Unix time
-                'bail',
-                'required',
-                'int'
-            ],
-            'authed_users' => [
-                'bail',
-                'required',
-                function( $attr, $value, $fail ) {
-                    if ( $value[ 0 ] !== env( 'AUTHED_USER' ) ) {
-                        $fail( 'The ' . $attr . ' from Slack does not match what is expected' );
-                    }
-                }
-            ]
-        ] );
-    }
-
-    private function validateEventData( $eventData ) {
-
     }
 
     /**

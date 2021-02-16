@@ -44,7 +44,7 @@ abstract class SlackEvent {
     // Force Extending class to define this method
     abstract public function validateEventData();
 
-    public function create( $data ) {
+    public function validateData( $data ) {
         $this->data = $data;
         $this->validateCoreData();
         $this->validateEventData();
@@ -93,19 +93,18 @@ abstract class SlackEvent {
             'type' => [
                 'bail',
                 'required',
-                'array'
+                'string',
             ],
             'event_id' => [
                 'bail',
                 'required',
-                'array'
+                'string'
             ],
-            'event_time' => [
+            'event_time' => [ // Unix time
                 'bail',
                 'required',
                 'int'
             ],
-            // Unix time
             'authed_users' => [
                 'bail',
                 'required',
