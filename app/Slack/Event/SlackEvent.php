@@ -46,8 +46,12 @@ abstract class SlackEvent {
 
     public function validateData( $data ) {
         $this->data = $data;
+
         $this->validateCoreData();
-        $this->validateEventData();
+
+        if ( $this->validated ) {
+            $this->validateEventData();
+        }
     }
 
     /**
