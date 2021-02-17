@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
+use App\Http\Requests\EventPostRequest;
 use App\Slack\Event\SlackEventFactory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -33,20 +34,15 @@ class EventController extends Controller {
      * @return \Illuminate\Http\Response
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store( Request $request ) {
+    public function store( EventPostRequest $request ) {
 
         // Is this a challenge request to initiate Slack API endpoint?
         if ( $request->json()->has( 'challenge' ) ) {
             return response( [ 'challenge' => $request->json()->get( 'challenge' ) ] );
         }
 
-        $slackEventFactory = new SlackEventFactory();
-        $slackEvent = $slackEventFactory->createEvent( 'app_mention' );
-
-        $slackEvent->validateData( $request->all() );
-
-        if ( !$slackEvent->validated ) {
-            return ResponseHelper::logAndErrorResponse( $slackEvent->errorMessage, 500 );
+        if ( !$request->validated() ) {
+            return ResponseHelper::logAndErrorResponse( $request->messages(), 500 );
         }
 
         return response( 'POST /api/event' );
