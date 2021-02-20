@@ -46,14 +46,14 @@ class EventController extends Controller {
             return ResponseHelper::logAndErrorResponse( $validator->getMessageBag(), 500 );
         }
 
-        $slacKEvent = $validator->validated();
+        $slacKEvent = $validator->validated()['event'];
 
-//        $event = new Event();
-//
-//        $event->type = $slacKEvent['type'];
-//        $event->user = $slacKEvent['user']; // could be user_id but also user element could be an array
-//
-//        $event->save();
+        $event = new Event();
+
+        $event->type = $slacKEvent['type'];
+        $event->user = $slacKEvent['user']; // could be user_id but also user element could be an array
+
+        $event->save();
 
         return response( 'POST /api/event' );
     }

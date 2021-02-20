@@ -88,7 +88,6 @@ class EventControllerTest extends TestCase {
         $event = Event::where( 'type', 'app_mention' )
             ->where( 'user', 'W021FGA1Z' )
             ->get();
-        var_dump($event);
         $this->assertNotEmpty( $event );
 
     }
