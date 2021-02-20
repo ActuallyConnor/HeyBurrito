@@ -3,30 +3,27 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Validator;
 
 class EventPostRequest extends FormRequest {
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
-    public function authorize() {
-        return true;
-    }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array
-     */
-    public function rules() {
-        return [
-            'challenge' => 'string',
-            'token' => 'string',
-            'api_app_id' => 'string',
-            'event' => 'array',
-            'event_id' => 'string',
-            'event_time' => 'int' // UNIX time
-        ];
+    public function validate() {
+        return Validator::make( $this->request->all(), [
+            'token' => [
+                'bail',
+                'required',
+                'string',
+                function( $attr, $value, $fail ) {
+                    if ( $value !== env( 'VERIFICATION_TOKEN' ) ) {
+                        $fail( sprintf( '%s does not match what is expected', $attr ) );
+                    }
+                }
+            ],
+            'event' => [
+                'bail',
+                'required',
+                'array'
+            ]
+        ] );
     }
 }

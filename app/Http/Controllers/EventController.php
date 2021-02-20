@@ -3,12 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
+use App\Http\Middleware\SlackChallengeMiddleware;
 use App\Http\Requests\EventPostRequest;
-use App\Slack\Event\SlackEventFactory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class EventController extends Controller {
+
+    public function __construct() {
+        $this->middleware( SlackChallengeMiddleware::class );
+
+    }
     /**
      * Display a listing of the resource.
      *
@@ -35,14 +40,9 @@ class EventController extends Controller {
      * @throws \Illuminate\Validation\ValidationException
      */
     public function store( EventPostRequest $request ) {
-
-        // Is this a challenge request to initiate Slack API endpoint?
-        if ( $request->json()->has( 'challenge' ) ) {
-            return response( [ 'challenge' => $request->json()->get( 'challenge' ) ] );
-        }
-
-        if ( !$request->validated() ) {
-            return ResponseHelper::logAndErrorResponse( $request->messages(), 500 );
+        $validator = $request->validate();
+        if ( $validator->fails() ) {
+            return ResponseHelper::logAndErrorResponse( $validator->getMessageBag(), 500 );
         }
 
         return response( 'POST /api/event' );
