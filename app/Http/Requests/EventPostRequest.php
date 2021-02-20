@@ -7,6 +7,17 @@ use Illuminate\Support\Facades\Validator;
 
 class EventPostRequest extends FormRequest {
 
+    public function authorize() {
+        return true;
+    }
+
+    public function rules() {
+        return [
+            'token' => 'required|string',
+            'event' => 'required|array'
+        ];
+    }
+
     public function validate() {
         return Validator::make( $this->request->all(), [
             'token' => [

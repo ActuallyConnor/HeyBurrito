@@ -58,7 +58,7 @@ class EventControllerTest extends TestCase {
             '/api/event',
             []
         );
-        $response->assertStatus( 500 );
+        $response->assertStatus( 422 );
     }
 
     public function testSlackChallenge() {
