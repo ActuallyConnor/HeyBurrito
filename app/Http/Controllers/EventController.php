@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\ResponseHelper;
 use App\Http\Middleware\SlackChallengeMiddleware;
 use App\Http\Requests\EventPostRequest;
+use App\Models\Event;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -44,6 +45,15 @@ class EventController extends Controller {
         if ( $validator->fails() ) {
             return ResponseHelper::logAndErrorResponse( $validator->getMessageBag(), 500 );
         }
+
+        $slacKEvent = $validator->validated();
+
+//        $event = new Event();
+//
+//        $event->type = $slacKEvent['type'];
+//        $event->user = $slacKEvent['user']; // could be user_id but also user element could be an array
+//
+//        $event->save();
 
         return response( 'POST /api/event' );
     }
