@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\DebugHelper;
 use App\Http\Middleware\TokenAuth;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;

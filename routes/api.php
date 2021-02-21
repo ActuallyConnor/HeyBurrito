@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\MockSlackAPI;
 use App\Http\Middleware\TokenAuth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -30,3 +31,16 @@ Route::resource( 'event', EventController::class )
         'show',
         'edit'
     ] );
+
+Route::get( '/slack', function() {
+    echo 'Hello';
+} );
+Route::prefix( 'slack' )->group( function() {
+    Route::get( '/', function() {
+        echo 'Hello';
+    } );
+    Route::get( 'event/{eventType}', [
+        MockSlackAPI::class,
+        'event'
+    ] );
+} );

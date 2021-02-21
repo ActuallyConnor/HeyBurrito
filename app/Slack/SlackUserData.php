@@ -3,6 +3,7 @@
 namespace App\Slack;
 
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Throwable;
@@ -30,32 +31,25 @@ class SlackUserData {
      * @return false|mixed
      */
     private static function getListOfSlackUsers() {
-        $base_uri = 'https://slack.com/api/';
+        $base_uri = env( 'SLACK_TESTING_URL', 'https://slack.com/api/' );
         $endpoint = 'users.list';
-        $method = 'GET';
         $content_type = 'application/x-www-form-urlencoded';
         $token = env( 'BOT_OAUTH_TOKEN' );
 
-        $client = new Client( [
-            'base_uri' => $base_uri
-        ] );
+        $response = Http::withHeaders( [
+            'Content-Type' => $content_type,
+            'Authorization' => 'Bearer ' . $token
+        ] )->get( $base_uri . $endpoint );
 
-        try {
-            $response = $client->request( $method, $endpoint, [
-                'headers' => [
-                    'Content-Type' => $content_type,
-                    'Authorization' => 'Bearer ' . $token
-                ]
-            ] );
-        } catch ( Throwable $e ) {
-            Log::error( $e );
+        if ( $response->status() != 200 ) {
+            Log::error( $response->body() );
             return false;
         }
 
-        if ( $response->getStatusCode() != 200 ) {
+        if ( $response->status() != 200 ) {
             Log::error( print_r( [
                 'message' => 'Request did not return ok response',
-                'response_code' => $response->getStatusCode()
+                'response_code' => $response->status()
             ], true ) );
             return false;
         }

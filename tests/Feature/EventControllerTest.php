@@ -42,18 +42,9 @@ class EventControllerTest extends TestCase {
     }
 
     public function testCoreEventPostValidation() {
-        $data = $this->getEventData( [
-            'type' => 'app_mention',
-            'user' => 'W021FGA1Z',
-            'text' => 'You can count on <@U0LAN0Z89> for an honorable mention.',
-            'ts' => '1515449483.000108',
-            'channel' => 'C0LAN2Q65',
-            'event_ts' => '1515449483000108',
-        ] );
         $response = $this->json(
-            'POST',
-            '/api/event',
-            $data
+            'GET',
+            '/api/slack/event/app_mention'
         );
         $response->assertStatus( 200 );
     }
@@ -71,43 +62,22 @@ class EventControllerTest extends TestCase {
         $removeEvents = Event::where( 'type', 'app_mention' )
             ->where( 'user', 'W021FGA1Z' )
             ->delete();
-        $data = $this->getEventData( [
-            'type' => 'app_mention',
-            'user' => 'W021FGA1Z',
-            'text' => 'You can count on <@U0LAN0Z89> for an honorable mention.',
-            'ts' => '1515449483.000108',
-            'channel' => 'C0LAN2Q65',
-            'event_ts' => '1515449483000108',
-        ] );
+
         $response = $this->json(
-            'POST',
-            '/api/event',
-            $data
+            'GET',
+            '/api/slack/event/app_mention'
         );
 
         $event = Event::where( 'type', 'app_mention' )
             ->where( 'user', 'W021FGA1Z' )
             ->get();
+
+        $response->assertOk();
         $this->assertNotEmpty( $event );
-
-    }
-
-    /**
-     * @param $event array
-     * @return array
-     */
-    private function getEventData( array $event ): array {
-        return [
-            'token' => env( 'VERIFICATION_TOKEN' ),
-            'team_id' => 'T061EG9R6',
-            'api_app_id' => 'A0MDYCDME',
-            'event' => $event,
-            'type' => 'event_callback',
-            'event_id' => 'Ev0MDYHUEL',
-            'event_time' => 1515449483000108,
-            'authed_users' => [
-                0 => 'U0LAN0Z89',
-            ],
-        ];
+        $this->assertEquals( 1, count( $event ) );
+        $this->assertEquals( 'app_mention', $event[ 0 ]->type );
+        $this->assertEquals( 'W021FGA1Z', $event[ 0 ]->user );
+        $this->assertEquals( 'C0LAN2Q65', $event[ 0 ]->channel );
+        $this->assertEquals( 'You can count on <@U0LAN0Z89> for an honorable mention.', $event[ 0 ]->text );
     }
 }
