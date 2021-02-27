@@ -55,6 +55,54 @@ class UserControllerTest extends TestCase {
 		$response->assertStatus( 302 );
 	}
 
+    /**
+     * Test removing user from database
+     */
+    public function testRemoveUser() {
+        if ( empty( User::where( 'user_id', 'UH8LSF3NV' )->first() ) ) {
+            $create_response = $this->json(
+                'POST',
+                '/api/user',
+                [ 'username' => 'Actually Connor' ],
+                [ 'hey-burrito-token' => env( 'HEY_BURRITO_AUTH_TOKEN' ) ]
+            );
+        }
+
+        $response = $this->json(
+            'DELETE',
+            '/api/user/UH8LSF3NV',
+            [],
+            [ 'hey-burrito-token' => env( 'HEY_BURRITO_AUTH_TOKEN' ) ]
+        );
+        $response->assertStatus( 200 );
+    }
+
+    /**
+     * Test fail to remove user from database because of bad username
+     */
+    public function testFailToRemoveUserBadUsername() {
+        $response = $this->json(
+            'DELETE',
+            '/api/user/dopey',
+            [],
+            [ 'hey-burrito-token' => env( 'HEY_BURRITO_AUTH_TOKEN' ) ]
+        );
+        $response->assertStatus( 404 );
+    }
+
+    /**
+     * Test fail to remove from database because of no username
+     */
+    public function testFailToRemoveUserNoUsername() {
+        $response = $this->json(
+            'DELETE',
+            '/api/user',
+            [],
+            [ 'hey-burrito-token' => env( 'HEY_BURRITO_AUTH_TOKEN' ) ]
+        );
+        $response->assertStatus( 405 );
+    }
+
 	/**
 	 * Test create user in the database
 	 */
@@ -213,51 +261,4 @@ class UserControllerTest extends TestCase {
 		$response->assertStatus( 400 );
 	}
 
-	/**
-	 * Test removing user from database
-	 */
-	public function testRemoveUser() {
-		if ( empty( User::where( 'user_id', 'UH8LSF3NV' )->first() ) ) {
-			$create_response = $this->json(
-				'POST',
-				'/api/user',
-				[ 'username' => 'Actually Connor' ],
-				[ 'hey-burrito-token' => env( 'HEY_BURRITO_AUTH_TOKEN' ) ]
-			);
-		}
-
-		$response = $this->json(
-			'DELETE',
-			'/api/user/UH8LSF3NV',
-			[],
-			[ 'hey-burrito-token' => env( 'HEY_BURRITO_AUTH_TOKEN' ) ]
-		);
-		$response->assertStatus( 200 );
-	}
-
-	/**
-	 * Test fail to remove user from database because of bad username
-	 */
-	public function testFailToRemoveUserBadUsername() {
-		$response = $this->json(
-			'DELETE',
-			'/api/user/dopey',
-			[],
-			[ 'hey-burrito-token' => env( 'HEY_BURRITO_AUTH_TOKEN' ) ]
-		);
-		$response->assertStatus( 404 );
-	}
-
-	/**
-	 * Test fail to remove from database because of no username
-	 */
-	public function testFailToRemoveUserNoUsername() {
-		$response = $this->json(
-			'DELETE',
-			'/api/user',
-			[],
-			[ 'hey-burrito-token' => env( 'HEY_BURRITO_AUTH_TOKEN' ) ]
-		);
-		$response->assertStatus( 405 );
-	}
 }
