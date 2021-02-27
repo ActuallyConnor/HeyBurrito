@@ -93,4 +93,111 @@ class MockSlackAPI extends Controller {
             return $data;
         }
     }
+
+    public function users_list() {
+        $data = [
+            "ok" => true,
+            "members" => [
+                [
+                    "id" => "UH8LSF3NV",
+                    "team_id" => "T028FDZ8T",
+                    "name" => "connor",
+                    "deleted" => false,
+                    "color" => "bc3663",
+                    "real_name" => "Connor",
+                    "tz" => "America/New_York",
+                    "tz_label" => "Eastern Standard Time",
+                    "tz_offset" => -18000,
+                    "profile" => [
+                        "title" => "typey typey",
+                        "phone" => "4165245596",
+                        "skype" => "",
+                        "real_name" => "Connor",
+                        "real_name_normalized" => "Connor",
+                        "display_name" => "Actually Connor",
+                        "display_name_normalized" => "Actually Connor",
+                        "fields" => null,
+                        "status_text" => "",
+                        "status_emoji" => "",
+                        "status_expiration" => 1610081999,
+                        "avatar_hash" => "576b8d9257e1",
+                        "image_original" => "https://avatars.slack-edge.com/2021-01-20/1682568248256_576b8d9257e166bdf82f_original.png",
+                        "is_custom_image" => true,
+                        "email" => "connor@artscience.ca",
+                        "first_name" => "Connor",
+                        "last_name" => "",
+                        "image_24" => "https://avatars.slack-edge.com/2021-01-20/1682568248256_576b8d9257e166bdf82f_24.png",
+                        "image_32" => "https://avatars.slack-edge.com/2021-01-20/1682568248256_576b8d9257e166bdf82f_32.png",
+                        "image_48" => "https://avatars.slack-edge.com/2021-01-20/1682568248256_576b8d9257e166bdf82f_48.png",
+                        "image_72" => "https://avatars.slack-edge.com/2021-01-20/1682568248256_576b8d9257e166bdf82f_72.png",
+                        "image_192" => "https://avatars.slack-edge.com/2021-01-20/1682568248256_576b8d9257e166bdf82f_192.png",
+                        "image_512" => "https://avatars.slack-edge.com/2021-01-20/1682568248256_576b8d9257e166bdf82f_512.png",
+                        "image_1024" => "https://avatars.slack-edge.com/2021-01-20/1682568248256_576b8d9257e166bdf82f_1024.png",
+                        "status_text_canonical" => "",
+                        "team" => "T028FDZ8T"
+                    ],
+                    "is_admin" => false,
+                    "is_owner" => false,
+                    "is_primary_owner" => false,
+                    "is_restricted" => false,
+                    "is_ultra_restricted" => false,
+                    "is_bot" => false,
+                    "is_app_user" => false,
+                    "updated" => 1614369621,
+                    "is_email_confirmed" => true
+                ],
+                [
+                    "id" => "U2ZPWV0JE",
+                    "team_id" => "T028FDZ8T",
+                    "name" => "jordana",
+                    "deleted" => false,
+                    "color" => "b14cbc",
+                    "real_name" => "Jordana Harrison",
+                    "tz" => "America/New_York",
+                    "tz_label" => "Eastern Standard Time",
+                    "tz_offset" => -18000,
+                    "profile" => [
+                        "title" => "Senior Full Snacc Developer",
+                        "phone" => "4167882607",
+                        "skype" => "",
+                        "real_name" => "Jordana Harrison",
+                        "real_name_normalized" => "Jordana Harrison",
+                        "display_name" => "banana",
+                        "display_name_normalized" => "banana",
+                        "fields" => null,
+                        "status_text" => "",
+                        "status_emoji" => "",
+                        "status_expiration" => 0,
+                        "avatar_hash" => "g4744eca4135",
+                        "email" => "jordana@artscience.ca",
+                        "first_name" => "Jordana",
+                        "last_name" => "Harrison",
+                        "image_24" => "https://secure.gravatar.com/avatar/4744eca4135a6ff4615e066d33d1b633.jpg?s=24&d=https%3A%2F%2Fa.slack-edge.com%2Fdf10d%2Fimg%2Favatars%2Fava_0019-24.png",
+                        "image_32" => "https://secure.gravatar.com/avatar/4744eca4135a6ff4615e066d33d1b633.jpg?s=32&d=https%3A%2F%2Fa.slack-edge.com%2Fdf10d%2Fimg%2Favatars%2Fava_0019-32.png",
+                        "image_48" => "https://secure.gravatar.com/avatar/4744eca4135a6ff4615e066d33d1b633.jpg?s=48&d=https%3A%2F%2Fa.slack-edge.com%2Fdf10d%2Fimg%2Favatars%2Fava_0019-48.png",
+                        "image_72" => "https://secure.gravatar.com/avatar/4744eca4135a6ff4615e066d33d1b633.jpg?s=72&d=https%3A%2F%2Fa.slack-edge.com%2Fdf10d%2Fimg%2Favatars%2Fava_0019-72.png",
+                        "image_192" => "https://secure.gravatar.com/avatar/4744eca4135a6ff4615e066d33d1b633.jpg?s=192&d=https%3A%2F%2Fa.slack-edge.com%2Fdf10d%2Fimg%2Favatars%2Fava_0019-192.png",
+                        "image_512" => "https://secure.gravatar.com/avatar/4744eca4135a6ff4615e066d33d1b633.jpg?s=512&d=https%3A%2F%2Fa.slack-edge.com%2Fdf10d%2Fimg%2Favatars%2Fava_0019-512.png",
+                        "status_text_canonical" => "",
+                        "team" => "T028FDZ8T"
+                    ],
+                    "is_admin" => false,
+                    "is_owner" => false,
+                    "is_primary_owner" => false,
+                    "is_restricted" => false,
+                    "is_ultra_restricted" => false,
+                    "is_bot" => false,
+                    "is_app_user" => false,
+                    "updated" => 1614185145,
+                    "is_email_confirmed" => true
+                ]
+            ],
+            "cache_ts" => 1498777272,
+            "response_metadata" => [
+                "next_cursor" => ""
+            ]
+        ];
+
+        return response( $data, 200 );
+    }
 }
