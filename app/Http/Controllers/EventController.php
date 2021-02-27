@@ -15,6 +15,7 @@ class EventController extends Controller {
         $this->middleware( SlackChallengeMiddleware::class );
 
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -46,12 +47,14 @@ class EventController extends Controller {
             return ResponseHelper::logAndErrorResponse( $validator->getMessageBag(), 500 );
         }
 
-        $slacKEvent = $validator->validated()['event'];
+        $slacKEvent = $validator->validated()[ 'event' ];
 
         $event = new Event();
 
-        $event->type = $slacKEvent['type'];
-        $event->user = $slacKEvent['user']; // could be user_id but also user element could be an array
+        $event->type = $slacKEvent[ 'type' ];
+        $event->user = $slacKEvent[ 'user' ]; // could be user_id but also user element could be an array
+        $event->channel = $slacKEvent[ 'channel' ];
+        $event->text = $slacKEvent[ 'text' ];
 
         $event->save();
 

@@ -59,25 +59,59 @@ class EventControllerTest extends TestCase {
     }
 
     public function testAppMentionEvent() {
-        $removeEvents = Event::where( 'type', 'app_mention' )
-            ->where( 'user', 'W021FGA1Z' )
-            ->delete();
+        $event_type = 'app_mention';
 
-        $response = $this->json(
-            'GET',
-            '/api/slack/event/app_mention'
-        );
-
-        $event = Event::where( 'type', 'app_mention' )
-            ->where( 'user', 'W021FGA1Z' )
-            ->get();
+        $response = $this->getEventTypeResponse( $event_type );
+        $event = $this->getEventTypeInDatabase( $event_type );
 
         $response->assertOk();
         $this->assertNotEmpty( $event );
-        $this->assertEquals( 1, count( $event ) );
-        $this->assertEquals( 'app_mention', $event[ 0 ]->type );
+        $this->assertCount( 1, $event );
+        $this->assertEquals( $event_type, $event[ 0 ]->type );
         $this->assertEquals( 'W021FGA1Z', $event[ 0 ]->user );
         $this->assertEquals( 'C0LAN2Q65', $event[ 0 ]->channel );
         $this->assertEquals( 'You can count on <@U0LAN0Z89> for an honorable mention.', $event[ 0 ]->text );
+    }
+
+    public function testMessageEvent() {
+        $event_type = 'message';
+
+        $response = $this->getEventTypeResponse( $event_type );
+        $event = $this->getEventTypeInDatabase( $event_type );
+
+        $response->assertOk();
+        $this->assertNotEmpty( $event );
+        $this->assertCount( 1, $event );
+        $this->assertEquals( $event_type, $event[ 0 ]->type );
+        $this->assertEquals( 'U2147483697', $event[ 0 ]->user );
+        $this->assertEquals( 'C2147483705', $event[ 0 ]->channel );
+        $this->assertEquals( 'Hello world', $event[ 0 ]->text );
+    }
+
+    /**
+     * Get response from mock API
+     *
+     * @param string $event_type
+     * @return \Illuminate\Testing\TestResponse
+     */
+    private function getEventTypeResponse( string $event_type ) {
+        $removeEvents = Event::where( 'type', $event_type )
+            ->delete();
+
+        return $this->json(
+            'GET',
+            sprintf( '/api/slack/event/%s', $event_type )
+        );
+    }
+
+    /**
+     * Get database row
+     *
+     * @param string $event_type
+     * @return mixed
+     */
+    private function getEventTypeInDatabase( string $event_type ) {
+        return Event::where( 'type', $event_type )
+            ->get();
     }
 }
