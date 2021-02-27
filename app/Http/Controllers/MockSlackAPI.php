@@ -9,21 +9,31 @@ use Tests\TestCase;
 class MockSlackAPI extends Controller {
 
     public function event( $eventType ) {
+
+        $eventUrl = sprintf( '%s/api/event', env( 'APP_URL' ) );
+
         switch ( $eventType ) {
             case 'app_mention':
-                $specificEventData = $this->getAppMentionEventData();
+                $response = Http::post(
+                    $eventUrl,
+                    $this->getEventData( $this->getAppMentionEventData() ) );
                 break;
             case 'message':
-                $specificEventData = $this->getMessageEventData();
+
+                $response = Http::post(
+                    $eventUrl,
+                    $this->getEventData( $this->getMessageEventData() ) );
+                break;
+            case 'slash_command':
+                $response = Http::asForm()->post(
+                    $eventUrl,
+                    $this->getSlashCommandEventData()
+                );
                 break;
             default:
-                $specificEventData = array();
+                $response = response( '', 500 );
                 break;
         }
-        $eventData = $this->getEventData( $specificEventData );
-
-
-        $response = Http::post( env( 'APP_URL' ) . '/api/event', $eventData );
 
         if ( $response->status() == 200 ) {
             return response( 'Request sent to Event Controller' );
@@ -92,6 +102,33 @@ class MockSlackAPI extends Controller {
             ];
             return $data;
         }
+    }
+
+    /**
+     * Get Slash Command event data
+     * Slack give you the data as URL encoded so in the calling function for this function we send the request using
+     * Http::asForm()
+     * @return array
+     */
+    private function getSlashCommandEventData(): array {
+        return [
+            'token' => env( 'VERIFICATION_TOKEN' ),
+            'team_id' => 'T0001',
+            'team_domain' => 'example',
+            'enterprise_id' => 'E0001',
+            'enterprise_name' => 'Globular%20Construct%20Inc',
+            'channel_id' => 'C2147483705',
+            'channel_name' => 'test',
+            'user_id' => 'U2147483697',
+            'user_name' => 'Steve',
+            'command' => '/heyburrito',
+            'text' => 'Hey Burrito!',
+            'response_url' => 'https://hooks.slack.com/commands/1234/5678',
+            'trigger_id',
+            '13345224609.738474920.8088930838d88f008e0',
+            'api_app_id',
+            env( 'API_APP_ID' )
+        ];
     }
 
     public function users_list() {

@@ -47,9 +47,9 @@ Route::prefix( 'slack' )->group( function() {
         'event'
     ] );
 
-    Route::get('users.list', [
+    Route::get( 'users.list', [
         MockSlackAPI::class,
         'users_list'
-    ]);
+    ] );
 
 } );

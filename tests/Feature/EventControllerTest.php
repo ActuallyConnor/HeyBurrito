@@ -88,6 +88,21 @@ class EventControllerTest extends TestCase {
         $this->assertEquals( 'Hello world', $event[ 0 ]->text );
     }
 
+    public function testSlashCommandEvent() {
+        $event_type = 'slash_command';
+
+        $response = $this->getEventTypeResponse( $event_type );
+        $event = $this->getEventTypeInDatabase( $event_type );
+
+        $response->assertOk();
+        $this->assertNotEmpty( $event );
+        $this->assertCount( 1, $event );
+        $this->assertEquals( $event_type, $event[ 0 ]->type );
+        $this->assertEquals( 'U2147483697', $event[ 0 ]->user );
+        $this->assertEquals( 'C2147483705', $event[ 0 ]->channel );
+        $this->assertEquals( 'Hey Burrito', $event[ 0 ]->text );
+    }
+
     /**
      * Get response from mock API
      *
