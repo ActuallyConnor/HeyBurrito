@@ -47,14 +47,21 @@ class EventController extends Controller {
             return ResponseHelper::logAndErrorResponse( $validator->getMessageBag(), 500 );
         }
 
-        $slacKEvent = $validator->validated()[ 'event' ];
+        $validated = $validator->validated();
 
         $event = new Event();
 
-        $event->type = $slacKEvent[ 'type' ];
-        $event->user = $slacKEvent[ 'user' ]; // could be user_id but also user element could be an array
-        $event->channel = $slacKEvent[ 'channel' ];
-        $event->text = $slacKEvent[ 'text' ];
+        if ( !empty( $validated[ 'event' ] ) ) {
+            $event->type = $validated[ 'event' ][ 'type' ];
+            $event->user = $validated[ 'event' ][ 'user' ]; // could be user_id but also user element could be an array
+            $event->channel = $validated[ 'event' ][ 'channel' ];
+            $event->text = $validated[ 'event' ][ 'text' ];
+        } else {
+            $event->type = 'slash_command';
+            $event->user = $validated[ 'user_id' ];
+            $event->channel = $validated[ 'channel_id' ];
+            $event->text = $validated[ 'text' ];
+        }
 
         $event->save();
 

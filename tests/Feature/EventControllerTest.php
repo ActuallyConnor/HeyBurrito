@@ -55,7 +55,7 @@ class EventControllerTest extends TestCase {
             '/api/event',
             []
         );
-        $response->assertStatus( 422 );
+        $response->assertStatus( 500 );
     }
 
     public function testAppMentionEvent() {
@@ -100,7 +100,7 @@ class EventControllerTest extends TestCase {
         $this->assertEquals( $event_type, $event[ 0 ]->type );
         $this->assertEquals( 'U2147483697', $event[ 0 ]->user );
         $this->assertEquals( 'C2147483705', $event[ 0 ]->channel );
-        $this->assertEquals( 'Hey Burrito', $event[ 0 ]->text );
+        $this->assertEquals( 'Hey Burrito!', $event[ 0 ]->text );
     }
 
     /**

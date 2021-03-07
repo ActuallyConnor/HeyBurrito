@@ -94,8 +94,7 @@ class MockSlackAPI extends Controller {
         ];
         if ( rand( 0, 1 ) == 0 ) {
             return $data;
-        }
-        else {
+        } else {
             $data[ 'edited' ] = [
                 "user" => "U2147483697",
                 "ts" => "1355517536.000001"
@@ -124,10 +123,8 @@ class MockSlackAPI extends Controller {
             'command' => '/heyburrito',
             'text' => 'Hey Burrito!',
             'response_url' => 'https://hooks.slack.com/commands/1234/5678',
-            'trigger_id',
-            '13345224609.738474920.8088930838d88f008e0',
-            'api_app_id',
-            env( 'API_APP_ID' )
+            'trigger_id' => '13345224609.738474920.8088930838d88f008e0',
+            'api_app_id' => env( 'API_APP_ID' )
         ];
     }
 

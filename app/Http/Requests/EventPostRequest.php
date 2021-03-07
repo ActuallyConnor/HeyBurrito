@@ -12,10 +12,7 @@ class EventPostRequest extends FormRequest {
     }
 
     public function rules() {
-        return [
-            'token' => 'required|string',
-            'event' => 'required|array'
-        ];
+        return [];
     }
 
     public function validate() {
@@ -30,11 +27,10 @@ class EventPostRequest extends FormRequest {
                     }
                 }
             ],
-            'event' => [
-                'bail',
-                'required',
-                'array'
-            ]
+            'event' => [ 'array' ],
+            'user_id' => [ 'string' ],
+            'channel_id' => [ 'string' ],
+            'text' => [ 'string' ]
         ] );
     }
 }
