@@ -2,8 +2,6 @@
 
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\MockSlackAPI;
-use App\Http\Middleware\TokenAuth;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 

@@ -26,19 +26,16 @@ class EventControllerTest extends TestCase {
     }
 
     public function testSlackChallenge() {
-        $challenge = 'this_is_the_challenge';
-        $response = $this->json(
-            'POST',
-            '/api/event',
-            [
-                'challenge' => $challenge
-            ]
-        );
+        $event_type = 'challenge';
+        $response = $this->getEventTypeResponse( $event_type );
+
+        $challenge = "3eZbrw1aBm2rZgRNFdxV2595E9CY3gmdALWMmHkvFXO7tYXAYM8P";
         $response
             ->assertStatus( 200 )
             ->assertJson( [
                 'challenge' => $challenge
             ] );
+
     }
 
     public function testCoreEventPostValidation() {
@@ -55,7 +52,7 @@ class EventControllerTest extends TestCase {
             '/api/event',
             []
         );
-        $response->assertStatus( 500 );
+        $response->assertStatus( 302 );
     }
 
     public function testAppMentionEvent() {
@@ -64,7 +61,7 @@ class EventControllerTest extends TestCase {
         $response = $this->getEventTypeResponse( $event_type );
         $event = $this->getEventTypeInDatabase( $event_type );
 
-        $response->assertOk();
+        $response->assertStatus( 200 );
         $this->assertNotEmpty( $event );
         $this->assertCount( 1, $event );
         $this->assertEquals( $event_type, $event[ 0 ]->type );
@@ -79,7 +76,7 @@ class EventControllerTest extends TestCase {
         $response = $this->getEventTypeResponse( $event_type );
         $event = $this->getEventTypeInDatabase( $event_type );
 
-        $response->assertOk();
+        $response->assertStatus( 200 );
         $this->assertNotEmpty( $event );
         $this->assertCount( 1, $event );
         $this->assertEquals( $event_type, $event[ 0 ]->type );
@@ -94,7 +91,7 @@ class EventControllerTest extends TestCase {
         $response = $this->getEventTypeResponse( $event_type );
         $event = $this->getEventTypeInDatabase( $event_type );
 
-        $response->assertOk();
+        $response->assertStatus( 200 );
         $this->assertNotEmpty( $event );
         $this->assertCount( 1, $event );
         $this->assertEquals( $event_type, $event[ 0 ]->type );

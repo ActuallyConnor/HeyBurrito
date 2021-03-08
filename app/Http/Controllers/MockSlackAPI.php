@@ -13,6 +13,12 @@ class MockSlackAPI extends Controller {
         $eventUrl = sprintf( '%s/api/event', env( 'APP_URL' ) );
 
         switch ( $eventType ) {
+            case 'challenge':
+                $response = Http::post(
+                    $eventUrl,
+                    $this->getChallengeData()
+                );
+                break;
             case 'app_mention':
                 $response = Http::post(
                     $eventUrl,
@@ -36,15 +42,29 @@ class MockSlackAPI extends Controller {
         }
 
         if ( $response->status() == 200 ) {
-            return response( 'Request sent to Event Controller' );
-        }
-        else {
+            return response( $response->body() );
+        } else {
             return $response;
         }
 
     }
 
     /**
+     * Get Slack challenge data
+     *
+     * @return string[]
+     */
+    private function getChallengeData(): array {
+        return [
+            'token' => env( 'VERIFICATION_TOKEN' ),
+            'challenge' => "3eZbrw1aBm2rZgRNFdxV2595E9CY3gmdALWMmHkvFXO7tYXAYM8P",
+            'type' => "url_verification"
+        ];
+    }
+
+    /**
+     * Get default core event data
+     *
      * @param $event array
      * @return array
      */

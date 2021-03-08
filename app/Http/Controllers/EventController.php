@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
-use App\Http\Middleware\SlackChallengeMiddleware;
+use App\Http\Middleware\SlackEvent;
 use App\Http\Requests\EventPostRequest;
 use App\Models\Event;
 use Illuminate\Http\Request;
@@ -12,7 +12,9 @@ use Illuminate\Support\Facades\Validator;
 class EventController extends Controller {
 
     public function __construct() {
-        $this->middleware( SlackChallengeMiddleware::class );
+        $this->middleware( SlackEvent::class, [
+            'only' => [ 'store' ]
+        ] );
 
     }
 
@@ -42,12 +44,7 @@ class EventController extends Controller {
      * @throws \Illuminate\Validation\ValidationException
      */
     public function store( EventPostRequest $request ) {
-        $validator = $request->validate();
-        if ( $validator->fails() ) {
-            return ResponseHelper::logAndErrorResponse( $validator->getMessageBag(), 500 );
-        }
-
-        $validated = $validator->validated();
+        $validated = $request->validated();
 
         $event = new Event();
 
